@@ -5,10 +5,14 @@
     "베이지안통계학",
     "다변량통계분석",
     "행정수학",
+    "음악의세계와감상",
+    "English for Professional Track",
     "IELTS",
     "보험계리사 1차",
     "SOA",
+    "컴활1급",
     "출생아수 프로젝트",
+    "DSSI SQL 공모전",
     "취업·포트폴리오"
   ],
   "plans": [
@@ -37,8 +41,20 @@
       "deadline": "2026-10-20"
     },
     {
+      "subject": "음악의세계와감상",
+      "goal": "결석 4회 넘지 않기, 매주 감상 내용 간단히 기록",
+      "hours": 1,
+      "deadline": "2026-12-16"
+    },
+    {
+      "subject": "English for Professional Track",
+      "goal": "에세이 2편 기한 내 제출, 15주차 발표 준비",
+      "hours": 2,
+      "deadline": "2026-12-16"
+    },
+    {
       "subject": "IELTS",
-      "goal": "Academic 응시 완료 — Waterloo 지원 어학요건 확보",
+      "goal": "Academic 응시 완료(11월 목표) — Waterloo 지원 어학요건 확보",
       "hours": 4,
       "deadline": "2026-12-31"
     },
@@ -47,6 +63,12 @@
       "goal": "GLM 실패 원인 정리 → 일반화 감마분포 적합까지",
       "hours": 2,
       "deadline": "2026-10-31"
+    },
+    {
+      "subject": "DSSI SQL 공모전",
+      "goal": "팀 배정 확인 후 담당 파트 착수 (정확한 마감일 미확인)",
+      "hours": 2,
+      "deadline": "2026-08-31"
     },
     {
       "subject": "취업·포트폴리오",
@@ -68,14 +90,23 @@
     },
     {
       "subject": "SOA",
-      "goal": "다음 응시 과목 확정 후 교재 1회독 착수",
+      "goal": "다음 응시 과목(Exam PA) 확정 후 교재 1회독 착수",
       "hours": 1,
       "deadline": "2027-02-28"
+    },
+    {
+      "subject": "컴활1급",
+      "goal": "8/25 결과 확인 후 불합격 시 신유형 대비 자료 확보",
+      "hours": 1,
+      "deadline": "2026-08-25"
     }
   ],
   "deadlines": [
+    { "title": "금융권 공동채용 박람회", "date": "2026-08-19" },
+    { "title": "컴활 1급 실기 결과 발표", "date": "2026-08-25" },
     { "title": "중간고사 시작", "date": "2026-10-20" },
     { "title": "인재개발센터 취업 프로그램 종료", "date": "2026-11-13" },
+    { "title": "다변량통계분석 기말고사", "date": "2026-12-16" },
     { "title": "보험계리사 1차 (예상)", "date": "2027-04-10" }
   ]
 }

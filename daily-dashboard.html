@@ -211,7 +211,15 @@ input[type=range]{accent-color:var(--accent);width:100%;margin:9px 0 0}
 .rv-top .c{flex:1;word-break:break-word}
 .rv-meta{display:flex;gap:9px;align-items:center;margin-top:4px;flex-wrap:wrap}
 .boxlv{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--m-rv);border:1px solid var(--m-rv);border-radius:20px;padding:0 6px}
-.rv-acts{display:flex;gap:5px;margin-top:7px}
+.rv-acts{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.rv-answer{display:none;margin-top:6px;padding:8px 10px;background:var(--paper);
+  border-left:2px solid var(--m-rv);border-radius:0 var(--r) var(--r) 0;font-size:13px;word-break:break-word}
+.rv-answer.on{display:block}
+.rv-hint{font-size:11.5px;color:var(--ink3);margin-top:6px}
+.done-plan{display:flex;gap:9px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--rule2)}
+.done-plan:last-child{border-bottom:none}
+.done-plan .g{flex:1;color:var(--ink2);word-break:break-word}
+.done-plan .on-date{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink3)}
 
 .ev{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--rule2);align-items:flex-start}
 .ev:last-child{border-bottom:none}
@@ -380,6 +388,8 @@ code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--pap
         <button class="btn" id="planAdd">추가</button>
       </div>
       <div id="planList" style="margin-top:6px"></div>
+      <div class="subhead eyebrow" id="donePlansHead" style="display:none">완료한 계획</div>
+      <div id="donePlanList"></div>
     </section>
 
     <!-- 습관 -->
@@ -418,9 +428,28 @@ code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--pap
       <h2>복습 <span class="count due" id="reviewDue">0</span><span class="count" id="reviewTotal">0</span></h2>
       <div class="row">
         <select id="rvSubject" style="width:112px"></select>
-        <input type="text" id="rvContent" class="grow" placeholder="오늘 배운 내용 한 줄">
+        <input type="text" id="rvContent" class="grow" placeholder="질문 — 예: MLE의 정의는?">
+      </div>
+      <div class="row" style="margin-top:6px">
+        <input type="text" id="rvAnswer" class="grow" placeholder="답 (비워둬도 됩니다) — 예: 우도함수를 최대화하는 θ">
         <button class="btn" id="rvAdd">추가</button>
       </div>
+      <details class="help">
+        <summary>어떻게 쓰나요?</summary>
+        <p><b>다시 읽는 칸이 아니라 다시 떠올리는 칸입니다.</b>
+        노트를 눈으로 훑으면 아는 것 같지만, 시험장에서는 백지에서 꺼내야 합니다.
+        그래서 내용이 아니라 <b>질문</b>을 적습니다.</p>
+        <ol>
+          <li>공부를 마치면 그날 배운 것에서 질문을 2~3개 뽑아 적습니다. 답도 함께 적어두면 채점이 됩니다.</li>
+          <li>다음 날 목록에 뜨면 <b>답을 보기 전에</b> 먼저 소리 내어 답해 봅니다.</li>
+          <li><b>답 보기</b>로 확인한 뒤 맞았으면 <b>기억함</b>, 막혔으면 <b>다시</b>를 누릅니다.</li>
+          <li>기억함을 누를 때마다 다음 복습이 1 → 3 → 7 → 16 → 35일 뒤로 멀어집니다. 막힌 것만 자주 돌아옵니다.</li>
+        </ol>
+        <p><b>좋은 질문</b> — 정의, 조건, 공식의 유도 이유, 두 개념의 차이.<br>
+        &ldquo;베이즈 정리에서 Posterior는 무엇에 비례하는가?&rdquo; / &ldquo;Jeffreys prior가 불변인 이유는?&rdquo;</p>
+        <p><b>피할 질문</b> — 계산 문제 전체, &ldquo;5장 복습&rdquo;처럼 범위만 적은 것.
+        30초 안에 답할 수 있는 크기로 쪼개는 편이 오래갑니다.</p>
+      </details>
       <div class="subhead eyebrow">오늘 복습할 것</div>
       <div id="rvDueList"></div>
       <div class="subhead eyebrow">예정</div>
@@ -948,26 +977,34 @@ document.getElementById("jrToday").addEventListener("click", ()=>{
    ══════════════════════════════════════════════════════ */
 function intervals(){ return (S.settings.intervals && S.settings.intervals.length) ? S.settings.intervals : [1,3,7,16,35]; }
 document.getElementById("rvAdd").addEventListener("click", addReview);
-document.getElementById("rvContent").addEventListener("keydown", e=>{ if(e.key==="Enter") addReview(); });
+document.getElementById("rvContent").addEventListener("keydown", e=>{
+  if(e.key==="Enter") document.getElementById("rvAnswer").focus();
+});
+document.getElementById("rvAnswer").addEventListener("keydown", e=>{ if(e.key==="Enter") addReview(); });
 function addReview(){
-  const el = document.getElementById("rvContent");
-  const content = el.value.trim(); if(!content) return;
+  const q = document.getElementById("rvContent"), a = document.getElementById("rvAnswer");
+  const content = q.value.trim();
+  if(!content){ toast("질문을 입력하세요."); q.focus(); return; }
   S.reviews.push({
-    id: uid(), content,
+    id: uid(), content, answer: a.value.trim(),
     subjectId: document.getElementById("rvSubject").value || "",
     box: 0, learnedOn: today(), nextDue: addDays(today(), intervals()[0]),
     correct: 0, missed: 0
   });
-  el.value = ""; save(); renderReviews(); renderCalendar(); el.focus();
+  q.value = ""; a.value = "";
+  save(); renderReviews(); renderCalendar(); q.focus();
+  toast("내일 복습 목록에 올라옵니다.");
 }
 function rvItemHtml(r, actionable){
   const subj = S.subjects.find(s=>s.id===r.subjectId);
   const iv = intervals();
   const n = diffDays(today(), r.nextDue);
   const when = n<0 ? Math.abs(n)+"일 지남" : n===0 ? "오늘" : n===1 ? "내일" : n+"일 뒤";
+  const hasA = !!r.answer;
   return '<div class="rv" data-id="'+r.id+'">'+
     '<div class="rv-top"><span class="c">'+esc(r.content)+'</span>'+
-      '<button class="icon-btn" data-act="delrv" title="삭제">×</button></div>'+
+      '<button class="icon-btn" data-act="delrv" title="삭제">\u00d7</button></div>'+
+    (hasA ? '<div class="rv-answer">'+esc(r.answer)+'</div>' : "")+
     '<div class="rv-meta">'+
       (subj?'<span class="tag">'+esc(subj.name)+'</span>':"")+
       '<span class="boxlv">'+Math.min(r.box+1, iv.length)+'단계</span>'+
@@ -975,9 +1012,12 @@ function rvItemHtml(r, actionable){
       (r.missed?'<span class="mini">다시 '+r.missed+'회</span>':"")+
     '</div>'+
     (actionable
-      ? '<div class="rv-acts"><button class="btn sm" data-act="ok">기억함</button>'+
-        '<button class="ghost sm" data-act="again">다시</button></div>'
-      : "")+
+      ? '<div class="rv-acts">'+
+        (hasA?'<button class="ghost sm" data-act="reveal">답 보기</button>':"")+
+        '<button class="btn sm" data-act="ok">기억함</button>'+
+        '<button class="ghost sm" data-act="again">다시</button></div>'+
+        (hasA?'<div class="rv-hint">먼저 스스로 답해 본 뒤 확인하세요.</div>':"")
+      : (hasA?'<div class="rv-acts"><button class="ghost sm" data-act="reveal">답 보기</button></div>':""))+
     '</div>';
 }
 function renderReviews(){
@@ -990,15 +1030,24 @@ function renderReviews(){
   document.getElementById("reviewTotal").textContent = "전체 "+S.reviews.length;
   document.getElementById("rvDueList").innerHTML = due.length
     ? due.map(r=>rvItemHtml(r,true)).join("")
-    : '<div class="empty">오늘 복습할 항목이 없습니다.<br>배운 내용을 위에 적어두면 내일부터 순서대로 올라옵니다.</div>';
+    : (S.reviews.length
+        ? '<div class="empty">오늘 몫은 끝났습니다. 오늘 배운 것에서 질문을 하나 더 뽑아 두세요.</div>'
+        : '<div class="empty">아직 등록된 질문이 없습니다.<br>위 &lsquo;어떻게 쓰나요?&rsquo;를 펼쳐 보세요.</div>');
   document.getElementById("rvSoonList").innerHTML = soon.length
     ? soon.map(r=>rvItemHtml(r,false)).join("")
     : '<div class="empty">예정된 복습이 없습니다.</div>';
 }
 function reviewClick(e){
   const btn = e.target.closest("button[data-act]"); if(!btn) return;
-  const r = S.reviews.find(x=>x.id===btn.closest(".rv").dataset.id); if(!r) return;
+  const box = btn.closest(".rv");
+  const r = S.reviews.find(x=>x.id===box.dataset.id); if(!r) return;
   const iv = intervals();
+  if (btn.dataset.act==="reveal"){        /* 답 펼치기 — 상태 저장 없이 화면에서만 */
+    const ans = box.querySelector(".rv-answer"); if(!ans) return;
+    const open = ans.classList.toggle("on");
+    btn.textContent = open ? "답 숨기기" : "답 보기";
+    return;
+  }
   if (btn.dataset.act==="ok"){
     r.box = Math.min(r.box+1, iv.length-1);
     r.correct = (r.correct||0)+1;
@@ -1229,33 +1278,63 @@ function sortedPlans(){
     (a.deadline||"9999-99-99").localeCompare(b.deadline||"9999-99-99") ||
     a.goal.localeCompare(b.goal));
 }
-function renderPlans(){
-  document.getElementById("planCount").textContent = S.plans.length;
-  const el = document.getElementById("planList");
-  if(!S.plans.length){ el.innerHTML = '<div class="empty">과목별 목표를 등록하면 진도와 투입 시간을 함께 볼 수 있습니다.<br>위 &lsquo;추천 계획 불러오기&rsquo;로 기본 구성을 채울 수도 있습니다.</div>'; return; }
+function planRowHtml(p){
   const ws = weekStart(), we = weekEnd(), t = today();
-  el.innerHTML = sortedPlans().map(p=>{
-    const subj = S.subjects.find(s=>s.id===p.subjectId);
-    const actual = S.sessions.filter(x=>x.subjectId===p.subjectId && x.date>=ws && x.date<=we)
-                             .reduce((a,x)=>a+x.minutes,0)/60;
-    const pct = p.weeklyTarget ? Math.min(100,(actual/p.weeklyTarget)*100) : 0;
-    let dd = "";
-    if (p.deadline){
-      const n = diffDays(t, p.deadline);
-      dd = '<span class="mini">마감 <b>'+(n===0?"D-DAY":n>0?"D-"+n:"D+"+Math.abs(n))+'</b></span>';
-    }
-    return '<div class="plan" data-id="'+p.id+'">'+
-      '<div class="plan-top"><span class="tag">'+esc(subj?subj.name:"—")+'</span>'+
-        '<span class="g">'+esc(p.goal)+'</span>'+
-        '<button class="icon-btn" data-act="delplan" title="삭제">×</button></div>'+
-      '<div class="plan-meta"><span class="mini">진도 <b>'+p.progress+'%</b></span>'+
-        (p.weeklyTarget
-          ? '<span class="mini">이번 주 <b>'+actual.toFixed(1)+'h</b> / '+p.weeklyTarget+'h ('+Math.round(pct)+'%)</span>'
-          : '<span class="mini">이번 주 <b>'+actual.toFixed(1)+'h</b></span>')+dd+'</div>'+
-      '<div class="track" style="margin-top:8px"><div class="fill" style="width:'+p.progress+'%"></div></div>'+
-      '<input type="range" min="0" max="100" step="5" value="'+p.progress+'" data-act="prog"></div>';
-  }).join("");
+  const subj = S.subjects.find(s=>s.id===p.subjectId);
+  const actual = S.sessions.filter(x=>x.subjectId===p.subjectId && x.date>=ws && x.date<=we)
+                           .reduce((a,x)=>a+x.minutes,0)/60;
+  const pct = p.weeklyTarget ? Math.min(100,(actual/p.weeklyTarget)*100) : 0;
+  let dd = "";
+  if (p.deadline){
+    const n = diffDays(t, p.deadline);
+    dd = '<span class="mini">마감 <b>'+(n===0?"D-DAY":n>0?"D-"+n:"D+"+Math.abs(n))+'</b></span>';
+  }
+  return '<div class="plan" data-id="'+p.id+'">'+
+    '<div class="plan-top"><span class="tag">'+esc(subj?subj.name:"\u2014")+'</span>'+
+      '<span class="g">'+esc(p.goal)+'</span>'+
+      '<button class="ghost sm" data-act="doneplan" title="완료 처리">완료</button>'+
+      '<button class="icon-btn" data-act="delplan" title="삭제">\u00d7</button></div>'+
+    '<div class="plan-meta"><span class="mini">진도 <b>'+p.progress+'%</b></span>'+
+      (p.weeklyTarget
+        ? '<span class="mini">이번 주 <b>'+actual.toFixed(1)+'h</b> / '+p.weeklyTarget+'h ('+Math.round(pct)+'%)</span>'
+        : '<span class="mini">이번 주 <b>'+actual.toFixed(1)+'h</b></span>')+dd+'</div>'+
+    '<div class="track" style="margin-top:8px"><div class="fill" style="width:'+p.progress+'%"></div></div>'+
+    '<input type="range" min="0" max="100" step="5" value="'+p.progress+'" data-act="prog"></div>';
 }
+function donePlanHtml(p){
+  const subj = S.subjects.find(s=>s.id===p.subjectId);
+  return '<div class="done-plan plan" data-id="'+p.id+'">'+
+    '<span class="tag">'+esc(subj?subj.name:"\u2014")+'</span>'+
+    '<span class="g">'+esc(p.goal)+'</span>'+
+    '<span class="on-date">'+(p.completedOn?shortDate(p.completedOn)+" 완료":"완료")+'</span>'+
+    '<button class="ghost sm" data-act="undoplan" title="진행 중으로 되돌리기">되돌리기</button>'+
+    '<button class="icon-btn" data-act="delplan" title="삭제">\u00d7</button></div>';
+}
+function renderPlans(){
+  const active = sortedPlans().filter(p=>!p.done);
+  const done = S.plans.filter(p=>p.done)
+    .sort((a,b)=>(b.completedOn||"").localeCompare(a.completedOn||""));
+
+  document.getElementById("planCount").textContent = active.length;
+  const el = document.getElementById("planList");
+  el.innerHTML = active.length
+    ? active.map(planRowHtml).join("")
+    : (S.plans.length
+        ? '<div class="empty">진행 중인 계획이 없습니다. 아래 완료 목록을 확인해 보세요.</div>'
+        : '<div class="empty">과목별 목표를 등록하면 진도와 투입 시간을 함께 볼 수 있습니다.<br>위 &lsquo;추천 계획 불러오기&rsquo;로 기본 구성을 채울 수도 있습니다.</div>');
+
+  const head = document.getElementById("donePlansHead");
+  const list = document.getElementById("donePlanList");
+  if (done.length){
+    head.style.display = ""; head.textContent = "완료한 계획 " + done.length + "개";
+    list.innerHTML = done.map(donePlanHtml).join("");
+  } else { head.style.display = "none"; list.innerHTML = ""; }
+}
+function completePlan(p){
+  p.done = true; p.progress = 100; p.completedOn = today();
+  save(); renderPlans(); toast("완료 목록으로 옮겼습니다.");
+}
+
 /* ── 추천 계획 ─────────────────────────────────────────
    파일에 내장된 기본 계획. 설정에 JSON 주소를 넣으면
    그쪽을 먼저 읽으므로, 계획만 바꿀 때는 이 파일을 건드릴 필요가 없다. */
@@ -1289,6 +1368,14 @@ const SEED = {
     { title:"중간고사 시작", date:"2026-10-20" },
     { title:"인재개발센터 취업 프로그램 종료", date:"2026-11-13" },
     { title:"보험계리사 1차 (예상)", date:"2027-04-10" }
+  ],
+  reviews: [
+    { subject:"베이지안통계학", q:"Posterior는 무엇에 비례하는가?", a:"Prior × Likelihood" },
+    { subject:"베이지안통계학", q:"Jeffreys prior는 무엇에 비례하는가?", a:"Fisher 정보량의 제곱근 √I(θ)" },
+    { subject:"수리통계학2", q:"MLE의 정의는?", a:"우도함수 L(θ)를 최대로 만드는 θ의 값" },
+    { subject:"수리통계학2", q:"포아송(λ)에서 크기 n 표본의 MLE는?", a:"표본평균 x̄" },
+    { subject:"다변량통계분석", q:"첫 번째 주성분이 뜻하는 방향은?", a:"데이터의 분산을 가장 크게 설명하는 방향" },
+    { subject:"보험계리사 1차", q:"회계등식을 쓰면?", a:"자산 = 부채 + 자본" }
   ]
 };
 
@@ -1308,9 +1395,17 @@ function normalizePlan(obj){
   const deadlines = (Array.isArray(obj.deadlines)?obj.deadlines:[])
     .filter(d=>d && typeof d.title==="string" && d.title.trim() && isDate(d.date))
     .map(d=>({ title:d.title.trim(), date:d.date }));
+  const reviews = (Array.isArray(obj.reviews)?obj.reviews:[])
+    .map(r=>({
+      subject: typeof r.subject==="string" ? r.subject.trim() : "",
+      content: String(r.q || r.question || r.content || "").trim(),
+      answer:  String(r.a || r.answer || "").trim()
+    }))
+    .filter(r=>r.content);
   plans.forEach(p=>{ if(!subjects.includes(p.subject)) subjects.push(p.subject); });
-  if (!plans.length && !deadlines.length) throw new Error("불러올 계획이 없습니다");
-  return { name: typeof obj.name==="string" ? obj.name : "", subjects, plans, deadlines };
+  reviews.forEach(r=>{ if(r.subject && !subjects.includes(r.subject)) subjects.push(r.subject); });
+  if (!plans.length && !deadlines.length && !reviews.length) throw new Error("불러올 계획이 없습니다");
+  return { name: typeof obj.name==="string" ? obj.name : "", subjects, plans, deadlines, reviews };
 }
 
 /* 병합 — 기존 데이터는 지우지 않고 같은 이름은 건너뛴다 */
@@ -1340,8 +1435,17 @@ function applyPlan(seed){
     if (S.deadlines.some(x=>x.title===d.title)) return;
     S.deadlines.push({ id:uid(), title:d.title, date:d.date }); nD++;
   });
+  let nR = 0;
+  (seed.reviews||[]).forEach(r=>{
+    if (S.reviews.some(x=>x.content===r.content)) return;
+    const subj = S.subjects.find(s=>s.name===r.subject);
+    S.reviews.push({ id:uid(), content:r.content, answer:r.answer,
+      subjectId: subj?subj.id:"", box:0, learnedOn:today(),
+      nextDue: today(), correct:0, missed:0 });   /* 받은 질문은 오늘 바로 한 번 */
+    nR++;
+  });
   save(); renderSubjects(); renderAll();
-  toast("계획 "+nP+"개, D-day "+nD+"개를 추가했습니다.");
+  toast("계획 "+nP+"개, D-day "+nD+"개"+(nR?", 복습 "+nR+"개":"")+"를 추가했습니다.");
   return true;
 }
 
@@ -1396,13 +1500,28 @@ document.getElementById("planList").addEventListener("input", e=>{
   if(e.target.dataset.act!=="prog") return;
   const p = S.plans.find(x=>x.id===e.target.closest(".plan").dataset.id);
   if(!p) return;
-  p.progress = parseInt(e.target.value,10); save(); renderPlans();
+  p.progress = parseInt(e.target.value,10);
+  if (p.progress >= 100){ completePlan(p); return; }   /* 100%면 자동으로 완료 처리 */
+  save(); renderPlans();
 });
-document.getElementById("planList").addEventListener("click", e=>{
-  if(!e.target.closest('[data-act="delplan"]')) return;
-  const id = e.target.closest(".plan").dataset.id;
-  S.plans = S.plans.filter(x=>x.id!==id); save(); renderAll();
-});
+function planClick(e){
+  const btn = e.target.closest("button[data-act]"); if(!btn) return;
+  const box = btn.closest(".plan"); if(!box) return;
+  const p = S.plans.find(x=>x.id===box.dataset.id); if(!p) return;
+  const act = btn.dataset.act;
+  if (act==="delplan"){
+    if (!confirm("'"+p.goal+"' 계획을 삭제할까요?")) return;
+    S.plans = S.plans.filter(x=>x.id!==p.id); save(); renderAll();
+  } else if (act==="doneplan"){
+    completePlan(p);
+  } else if (act==="undoplan"){
+    p.done = false; p.completedOn = null;
+    if (p.progress >= 100) p.progress = 95;
+    save(); renderPlans(); toast("진행 중으로 되돌렸습니다.");
+  }
+}
+document.getElementById("planList").addEventListener("click", planClick);
+document.getElementById("donePlanList").addEventListener("click", planClick);
 
 /* ══ 습관 ═══════════════════════════════════════════════ */
 document.getElementById("habitAdd").addEventListener("click", ()=>{

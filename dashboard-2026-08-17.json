@@ -1,0 +1,624 @@
+{
+  "version": 2,
+  "savedAt": 1786963174014,
+  "settings": {
+    "theme": "light",
+    "logSessions": false,
+    "duration": 60,
+    "sleepGoal": 7,
+    "intervals": [
+      1,
+      3,
+      7,
+      16,
+      35
+    ],
+    "planUrl": "",
+    "calMode": "script",
+    "scriptUrl": "https://script.google.com/macros/s/AKfycbwp0KQlbsnhGJG5qxeAWWtKLhGqqblDYtzQbsPJahtRGqv3wtyzdqolJt99H8waPsX65Q/exec",
+    "scriptToken": "GP1Th12gm59tICdsL8sVcEPCdtydx8Tmd7Hhg1tQMLJajRufgi5Bl1oMI4JWuX1J",
+    "clientId": "",
+    "pomodoro": 25,
+    "pomoOn": false
+  },
+  "deadlines": [
+    {
+      "id": "msub4oy6uwexd",
+      "title": "컴활 1급 실기",
+      "date": "2026-08-25"
+    },
+    {
+      "id": "msui5m98pogfd",
+      "title": "중간고사 시작",
+      "date": "2026-10-20"
+    },
+    {
+      "id": "msui5m98ia54u",
+      "title": "인재개발센터 취업 프로그램 종료",
+      "date": "2026-11-13"
+    },
+    {
+      "id": "msui5m98im9fc",
+      "title": "보험계리사 1차 (예상)",
+      "date": "2027-04-10"
+    },
+    {
+      "id": "msui8g6j4kt51",
+      "title": "금융권 공동채용 박람회",
+      "date": "2026-08-19"
+    },
+    {
+      "id": "msui8g6jq87ke",
+      "title": "컴활 1급 실기 결과 발표",
+      "date": "2026-08-25"
+    },
+    {
+      "id": "msui8g6j8hh0j",
+      "title": "다변량통계분석 기말고사",
+      "date": "2026-12-16"
+    }
+  ],
+  "todos": [
+    {
+      "id": "msu7rj29aptpv",
+      "text": "[성공 취업을 위한 직무 맞춤형 집중 프로그램] 신청",
+      "priority": "normal",
+      "tag": "커리어",
+      "due": "2026-08-15",
+      "done": true,
+      "doneAt": "2026-08-15",
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-15T10:09:02.529Z"
+    },
+    {
+      "id": "msu7rybl2v85r",
+      "text": "이력서 한 페이지 요약 마무리",
+      "priority": "normal",
+      "tag": "커리어",
+      "due": "2026-08-15",
+      "done": true,
+      "doneAt": "2026-08-15",
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-15T10:09:22.305Z"
+    },
+    {
+      "id": "msu7slso8gk0v",
+      "text": "기업별 질문 1개씩 준비 (삼성생명,코리안리,DB손해보험)",
+      "priority": "normal",
+      "tag": "커리어",
+      "due": "2026-08-15",
+      "done": true,
+      "doneAt": "2026-08-15",
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-15T10:09:52.728Z"
+    },
+    {
+      "id": "msu7ua0nllon9",
+      "text": "Prior*Likelihood 곱셈 형태로 쓰기",
+      "priority": "high",
+      "tag": "확률통계",
+      "due": "2026-08-15",
+      "done": true,
+      "doneAt": "2026-08-15",
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-15T10:11:10.775Z"
+    },
+    {
+      "id": "msuam4zsndvb6",
+      "text": "SQL 공모전 팀 배정 확인",
+      "priority": "normal",
+      "tag": "공모전",
+      "due": "2026-08-18",
+      "time": "",
+      "done": false,
+      "doneAt": null,
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-15T11:28:49.864Z"
+    },
+    {
+      "id": "msuanzq7c1ym4",
+      "text": "컴활 1급 실기",
+      "priority": "normal",
+      "tag": "컴활",
+      "due": "2026-08-25",
+      "time": "19:10",
+      "done": false,
+      "doneAt": null,
+      "carried": 0,
+      "gcalId": "5lvi35up14igr9ilue4fl0thp8@google.com",
+      "createdAt": "2026-08-15T11:30:16.351Z"
+    },
+    {
+      "id": "msuat678lsf3p",
+      "text": "오디세이",
+      "priority": "low",
+      "tag": "약속",
+      "due": "2026-08-16",
+      "time": "15:40",
+      "done": true,
+      "doneAt": "2026-08-16",
+      "carried": 0,
+      "gcalId": "c06j8ao3q242assd6ce3bgle88@google.com",
+      "createdAt": "2026-08-15T11:34:18.020Z"
+    },
+    {
+      "id": "msujjeghtn7n2",
+      "text": "참고문헌 관리프로그램 Mendeley 교육 수강",
+      "priority": "normal",
+      "tag": "학술",
+      "due": "2026-08-15",
+      "time": "",
+      "done": true,
+      "doneAt": "2026-08-16",
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-15T15:38:38.705Z"
+    },
+    {
+      "id": "msujnmsedr2d4",
+      "text": "Ch.2: Matrix Algebra & Random Vectors – Spectral decomposition & 양의 정부호(Positive Definite) 개념",
+      "priority": "normal",
+      "tag": "다변량",
+      "due": "2026-08-23",
+      "time": "",
+      "done": false,
+      "doneAt": null,
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-15T15:41:56.126Z"
+    },
+    {
+      "id": "msujoa7ajn3ol",
+      "text": "Ch.3: Sample Geometry and Random Sampling – n개의 관측치와 p개의 변수를 다룰 때, 표본 평균 벡터와 표본 공분산 행렬이 기하학적으로 어떤 의미(거리, 투영 등)를 갖는지 그림과 함께 이해",
+      "priority": "normal",
+      "tag": "다변량",
+      "due": "2026-08-28",
+      "time": "",
+      "done": false,
+      "doneAt": null,
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-15T15:42:26.470Z"
+    },
+    {
+      "id": "msujoz1prut69",
+      "text": "Ch.4: The Multivariate Normal Distribution (수식 눈에 바르기)",
+      "priority": "normal",
+      "tag": "다변량",
+      "due": "2026-08-30",
+      "time": "",
+      "done": false,
+      "doneAt": null,
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-15T15:42:58.669Z"
+    },
+    {
+      "id": "msujrgqk9b156",
+      "text": "야코비안 행렬식 이용한 변수변환 예제 풀이",
+      "priority": "normal",
+      "tag": "수리통계",
+      "due": "2026-08-30",
+      "time": "",
+      "done": false,
+      "doneAt": null,
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-15T15:44:54.908Z"
+    },
+    {
+      "id": "msvs7guyajwof",
+      "text": "포아송-감마 버전으로 Prior*Likelihood 연습",
+      "priority": "normal",
+      "tag": "확률통계",
+      "due": "2026-08-17",
+      "time": "",
+      "done": false,
+      "doneAt": null,
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-16T12:29:04.666Z"
+    },
+    {
+      "id": "msvs8855lk0ce",
+      "text": "보험수학 기출문제 1회분만 훑기",
+      "priority": "normal",
+      "tag": "보험수학",
+      "due": "2026-08-17",
+      "time": "",
+      "done": true,
+      "doneAt": "2026-08-17",
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-16T12:29:40.025Z"
+    },
+    {
+      "id": "msvvp7w4wxzxk",
+      "text": "Ch.5 고유값&고유벡터 – 개념 및 예제 2-3개 복습",
+      "priority": "normal",
+      "tag": "선형대수학",
+      "due": "2026-08-17",
+      "time": "",
+      "done": true,
+      "doneAt": "2026-08-17",
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-16T14:06:51.700Z"
+    },
+    {
+      "id": "msvvpghglbr9u",
+      "text": "다변량 정규분포의 확률밀도함수 수식을 백지에 적어보기",
+      "priority": "normal",
+      "tag": "확률통계",
+      "due": "2026-08-17",
+      "time": "",
+      "done": true,
+      "doneAt": "2026-08-17",
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-16T14:07:02.836Z"
+    },
+    {
+      "id": "msvvpq7w0ufiq",
+      "text": "특강 2회",
+      "priority": "normal",
+      "tag": "컴활",
+      "due": "2026-08-17",
+      "time": "",
+      "done": true,
+      "doneAt": "2026-08-17",
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-16T14:07:15.452Z"
+    },
+    {
+      "id": "msx3j6lbysum3",
+      "text": "정규분포, 지수분포, 포아송분포, 이항분포의 MLE 직접 유도",
+      "priority": "normal",
+      "tag": "수리통계",
+      "due": "2026-08-21",
+      "time": "",
+      "done": false,
+      "doneAt": null,
+      "carried": 0,
+      "gcalId": null,
+      "createdAt": "2026-08-17T10:33:53.183Z"
+    }
+  ],
+  "subjects": [
+    {
+      "id": "msuaix0ig2yny",
+      "name": "베이지안통계학"
+    },
+    {
+      "id": "msuaj1o0a3s3q",
+      "name": "다변량통계분석"
+    },
+    {
+      "id": "msuaj4b15zr92",
+      "name": "행정수학"
+    },
+    {
+      "id": "msuaj7pjvo4go",
+      "name": "음악의세계와감상"
+    },
+    {
+      "id": "msuajfj6k5ou1",
+      "name": "English for Professional Track"
+    },
+    {
+      "id": "msuakobdil6q0",
+      "name": "컴활 1급 실기"
+    },
+    {
+      "id": "msubo32kb1fq0",
+      "name": "선형대수학"
+    },
+    {
+      "id": "msui5m9824hm1",
+      "name": "수리통계학2"
+    },
+    {
+      "id": "msui5m980e0x5",
+      "name": "IELTS"
+    },
+    {
+      "id": "msui5m98q2htr",
+      "name": "보험계리사 1차"
+    },
+    {
+      "id": "msui5m980p933",
+      "name": "SOA"
+    },
+    {
+      "id": "msui5m98n5qwx",
+      "name": "출생아수 프로젝트"
+    },
+    {
+      "id": "msui5m98h28dp",
+      "name": "취업·포트폴리오"
+    },
+    {
+      "id": "msui8g6jd8vd8",
+      "name": "DSSI SQL 공모전"
+    },
+    {
+      "id": "msuj13gbrdahw",
+      "name": "컴활1급"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "msvvq75weg3fu",
+      "subjectId": "msuj13gbrdahw",
+      "date": "2026-08-16",
+      "minutes": 50,
+      "at": "2026-08-16T14:07:37.412Z",
+      "manual": true
+    }
+  ],
+  "plans": [
+    {
+      "id": "msuaxx7u7pm0t",
+      "subjectId": "msuakobdil6q0",
+      "goal": "특강 2회 ~ 4회",
+      "progress": 30,
+      "weeklyTarget": 6,
+      "deadline": "2026-08-21"
+    },
+    {
+      "id": "msuazrjt5o93h",
+      "subjectId": "msuakobdil6q0",
+      "goal": "이기적 1급 실기 기출 1~2회",
+      "progress": 0,
+      "weeklyTarget": 8,
+      "deadline": "2026-08-22"
+    },
+    {
+      "id": "msub04dkx6glh",
+      "subjectId": "msuakobdil6q0",
+      "goal": "이기적 1급 실기 기출 3~4회",
+      "progress": 0,
+      "weeklyTarget": 8,
+      "deadline": "2026-08-23"
+    },
+    {
+      "id": "msubpd9fsp16l",
+      "subjectId": "msubo32kb1fq0",
+      "goal": "Ch.5 고유값&고유벡터",
+      "progress": 100,
+      "weeklyTarget": 1,
+      "deadline": "2026-08-16",
+      "done": true,
+      "completedOn": "2026-08-17"
+    },
+    {
+      "id": "msui5m98rxafk",
+      "subjectId": "msui5m9824hm1",
+      "goal": "김우철 교재 중간범위 정리 + MLE 유형 손으로 재유도",
+      "progress": 0,
+      "weeklyTarget": 4,
+      "deadline": "2026-10-20"
+    },
+    {
+      "id": "msui5m9845ivv",
+      "subjectId": "msuaix0ig2yny",
+      "goal": "Prior·Posterior 개념 확립 → Jeffreys Prior까지 도달",
+      "progress": 0,
+      "weeklyTarget": 4,
+      "deadline": "2026-10-20"
+    },
+    {
+      "id": "msui5m98trn7t",
+      "subjectId": "msuaj1o0a3s3q",
+      "goal": "2025-2학기 기출 유형별 분류 후 재풀이",
+      "progress": 0,
+      "weeklyTarget": 3,
+      "deadline": "2026-10-20"
+    },
+    {
+      "id": "msui5m98zziz5",
+      "subjectId": "msuaj4b15zr92",
+      "goal": "주차별 연습문제를 그 주 안에 마감 (밀리지 않기)",
+      "progress": 0,
+      "weeklyTarget": 2,
+      "deadline": "2026-10-20"
+    },
+    {
+      "id": "msui5m985krz2",
+      "subjectId": "msui5m98n5qwx",
+      "goal": "GLM 실패 원인 정리 → 일반화 감마분포 적합까지",
+      "progress": 0,
+      "weeklyTarget": 2,
+      "deadline": "2026-10-31"
+    },
+    {
+      "id": "msui8g6ju7hfb",
+      "subjectId": "msui8g6jd8vd8",
+      "goal": "팀 배정 확인 후 담당 파트 착수 (정확한 마감일 미확인)",
+      "progress": 0,
+      "weeklyTarget": 2,
+      "deadline": "2026-08-31"
+    },
+    {
+      "id": "msuj13gbtei08",
+      "subjectId": "msuj13gbrdahw",
+      "goal": "8/25 결과 확인 후 불합격 시 신유형 대비 자료 확보",
+      "progress": 0,
+      "weeklyTarget": 1,
+      "deadline": "2026-08-25"
+    },
+    {
+      "id": "msuj4ye94qzr7",
+      "subjectId": "msubo32kb1fq0",
+      "goal": "Ch.6 직교성과 고유벡터 (+최소제곱 문제)",
+      "progress": 0,
+      "weeklyTarget": 1,
+      "deadline": "2026-08-20"
+    },
+    {
+      "id": "msuj5dkpc3ugb",
+      "subjectId": "msubo32kb1fq0",
+      "goal": "Ch.7 대칭 행렬과 이차형식(Quadratic Forms)",
+      "progress": 0,
+      "weeklyTarget": 1.5,
+      "deadline": "2026-08-23"
+    },
+    {
+      "id": "msujmpb3stbzh",
+      "subjectId": "msuaj1o0a3s3q",
+      "goal": "Ch.2 ~ Ch.4 예습",
+      "progress": 0,
+      "weeklyTarget": 4.5,
+      "deadline": "2026-08-30"
+    }
+  ],
+  "habits": [
+    {
+      "id": "msub1jaw82kgx",
+      "name": "Hackers Voca Day 1씩",
+      "log": {}
+    },
+    {
+      "id": "msuc6tupm0cw3",
+      "name": "듀오링고",
+      "log": {
+        "2026-08-15": true,
+        "2026-08-14": true,
+        "2026-08-16": true
+      }
+    }
+  ],
+  "sleep": {
+    "2026-08-15": {
+      "bed": "01:04",
+      "wake": "09:40"
+    },
+    "2026-08-16": {
+      "bed": "02:40",
+      "wake": "08:45"
+    },
+    "2026-08-17": {
+      "bed": "01:00",
+      "wake": "08:20"
+    }
+  },
+  "journal": {},
+  "reviews": [
+    {
+      "id": "msuiiqct4t5v1",
+      "content": "Posterior는 무엇에 비례하는가?",
+      "answer": "Prior × Likelihood",
+      "subjectId": "msuaix0ig2yny",
+      "box": 1,
+      "learnedOn": "2026-08-16",
+      "nextDue": "2026-08-19",
+      "correct": 1,
+      "missed": 0
+    },
+    {
+      "id": "msuiiqct0plk7",
+      "content": "Jeffreys prior는 무엇에 비례하는가?",
+      "answer": "Fisher 정보량의 제곱근 √I(θ)",
+      "subjectId": "msuaix0ig2yny",
+      "box": 0,
+      "learnedOn": "2026-08-16",
+      "nextDue": "2026-08-17",
+      "correct": 0,
+      "missed": 1
+    },
+    {
+      "id": "msuiiqctcczo7",
+      "content": "Prior와 Posterior의 차이를 한 문장으로?",
+      "answer": "자료를 보기 전의 믿음이 Prior, 자료를 반영해 갱신한 믿음이 Posterior",
+      "subjectId": "msuaix0ig2yny",
+      "box": 0,
+      "learnedOn": "2026-08-16",
+      "nextDue": "2026-08-17",
+      "correct": 0,
+      "missed": 1
+    },
+    {
+      "id": "msuiiqctg0yc0",
+      "content": "MLE의 정의는?",
+      "answer": "우도함수 L(θ)를 최대로 만드는 θ의 값",
+      "subjectId": "msui5m9824hm1",
+      "box": 0,
+      "learnedOn": "2026-08-16",
+      "nextDue": "2026-08-17",
+      "correct": 0,
+      "missed": 1
+    },
+    {
+      "id": "msuiiqctu5106",
+      "content": "포아송(λ)에서 크기 n 표본의 MLE는?",
+      "answer": "표본평균 x̄",
+      "subjectId": "msui5m9824hm1",
+      "box": 1,
+      "learnedOn": "2026-08-16",
+      "nextDue": "2026-08-19",
+      "correct": 1,
+      "missed": 0
+    },
+    {
+      "id": "msuiiqcttrzq9",
+      "content": "로그우도를 쓰는 이유는?",
+      "answer": "곱이 합으로 바뀌어 미분이 쉬워지고, 최대점의 위치는 그대로이기 때문",
+      "subjectId": "msui5m9824hm1",
+      "box": 1,
+      "learnedOn": "2026-08-16",
+      "nextDue": "2026-08-19",
+      "correct": 1,
+      "missed": 0
+    },
+    {
+      "id": "msuiiqctwsxpt",
+      "content": "첫 번째 주성분이 뜻하는 방향은?",
+      "answer": "데이터의 분산을 가장 크게 설명하는 방향",
+      "subjectId": "msuaj1o0a3s3q",
+      "box": 0,
+      "learnedOn": "2026-08-16",
+      "nextDue": "2026-08-17",
+      "correct": 0,
+      "missed": 1
+    },
+    {
+      "id": "msuiiqctlanku",
+      "content": "Av = λv 에서 λ와 v의 이름은?",
+      "answer": "λ는 고유값, v는 고유벡터",
+      "subjectId": "msuaj1o0a3s3q",
+      "box": 1,
+      "learnedOn": "2026-08-16",
+      "nextDue": "2026-08-19",
+      "correct": 1,
+      "missed": 0
+    },
+    {
+      "id": "msuiiqct58ysp",
+      "content": "A_x 와 ä_x 를 잇는 관계식은?",
+      "answer": "A_x = 1 − d · ä_x",
+      "subjectId": "msui5m98q2htr",
+      "box": 1,
+      "learnedOn": "2026-08-16",
+      "nextDue": "2026-08-19",
+      "correct": 1,
+      "missed": 0
+    },
+    {
+      "id": "msuj13gb5y4fc",
+      "content": "다변량정규분포에서 평균벡터·공분산행렬의 MLE는?",
+      "answer": "각각 표본평균벡터 X̄, 표본공분산행렬 S (기출 1번 문제 대비)",
+      "subjectId": "msuaj1o0a3s3q",
+      "box": 0,
+      "learnedOn": "2026-08-16",
+      "nextDue": "2026-08-17",
+      "correct": 0,
+      "missed": 1
+    }
+  ]
+}

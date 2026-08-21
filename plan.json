@@ -7,7 +7,7 @@
     { "subject": "행정수학", "goal": "주차별 과제 및 기말 대비", "hours": 3, "deadline": "2026-12-15" },
     { "subject": "IELTS", "goal": "중간고사 이후 본격 대비 전까지 Writing·Speaking 기초 다지기", "hours": 2, "deadline": "2026-11-15" },
     { "subject": "English for Professional Track", "goal": "주간 과제 소화", "hours": 1, "deadline": "2026-12-15" },
-    { "subject": "음악의세계와감상", "goal": "과제·감상문 제출 유지", "hours": 1, "deadline": "2026-12-15" }
+    { "subject": "음악의세계와감상", "goal": "과제·감상문 제출 유지", "hours": 1, "deadline": "2026-12-15" },
     { "subject": "메타코드 특강", "goal": "①이커머스 분석 시각화 강의 수강", "hours": 1, "deadline": "2026-09-07" },
     { "subject": "메타코드 특강", "goal": "②데이터엔지니어링 채용트렌드 강의 수강", "hours": 1, "deadline": "2026-09-21" },
     { "subject": "메타코드 특강", "goal": "③Claude Code 업무자동화 강의 수강", "hours": 1, "deadline": "2026-09-21" },
@@ -21,7 +21,7 @@
     { "subject": "메타코드 특강", "goal": "①이커머스 분석 시각화 강의 수강", "hours": 1, "deadline": "2026-09-07" },
     { "subject": "메타코드 특강", "goal": "②데이터엔지니어링 채용트렌드 강의 수강", "hours": 1, "deadline": "2026-09-21" },
     { "subject": "메타코드 특강", "goal": "③Claude Code 업무자동화 강의 수강", "hours": 1, "deadline": "2026-09-21" },
-    { "subject": "메타코드 특강", "goal": "④Analytics Engineer 직무트렌드 강의 수강", "hours": 1, "deadline": "2026-09-30" }
+    { "subject": "메타코드 특강", "goal": "④Analytics Engineer 직무트렌드 강의 수강", "hours": 1, "deadline": "2026-09-30" },
     { "title": "중간고사 시작", "date": "2026-10-20" },
     { "title": "중간고사 종료", "date": "2026-10-26" },
     { "title": "IELTS 응시 (날짜 미정, 잠정)", "date": "2026-11-15" },

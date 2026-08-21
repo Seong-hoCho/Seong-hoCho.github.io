@@ -1,21 +1,27 @@
 {
   "name": "2026 가을학기 + 하반기 공채 준비",
-  "subjects": ["수리통계학2", "베이지안통계학", "다변량통계분석", "행정수학", "자소서·공채준비", "IELTS", "English for Professional Track", "음악의세계와감상"],
+  "subjects": ["수리통계학2", "베이지안통계학", "다변량통계분석", "행정수학", "자소서·공채준비", "IELTS", "English for Professional Track", "음악의세계와감상", "메타코드 특강"],
   "plans": [
-    { "subject": "수리통계학2", "goal": "선수 내용(확률분포·MLE) 결손 보완하며 진도 따라가기", "hours": 5, "deadline": "2026-10-20" },
-    { "subject": "베이지안통계학", "goal": "포아송-감마 켤레사전분포 유도 후 다음 단원 선행학습", "hours": 5, "deadline": "2026-10-20" },
     { "subject": "다변량통계분석", "goal": "선수과목 결손 보완 병행하며 진도 유지", "hours": 4, "deadline": "2026-10-20" },
-    { "subject": "자소서·공채준비", "goal": "DB손해보험·삼성생명·코리안리 자소서 초안을 최종본으로 다듬고 지원 완료", "hours": 4, "deadline": "2026-10-10" },
+    { "subject": "자소서·공채준비", "goal": "DB손해보험·삼성생명·코리안리 자소서 초안을 최종본으로 다듬고 지원 완료", "hours": 4, "deadline": "2026-10-01" },
     { "subject": "행정수학", "goal": "주차별 과제 및 기말 대비", "hours": 3, "deadline": "2026-12-15" },
     { "subject": "IELTS", "goal": "중간고사 이후 본격 대비 전까지 Writing·Speaking 기초 다지기", "hours": 2, "deadline": "2026-11-15" },
     { "subject": "English for Professional Track", "goal": "주간 과제 소화", "hours": 1, "deadline": "2026-12-15" },
     { "subject": "음악의세계와감상", "goal": "과제·감상문 제출 유지", "hours": 1, "deadline": "2026-12-15" }
+    { "subject": "메타코드 특강", "goal": "①이커머스 분석 시각화 강의 수강", "hours": 1, "deadline": "2026-09-07" },
+    { "subject": "메타코드 특강", "goal": "②데이터엔지니어링 채용트렌드 강의 수강", "hours": 1, "deadline": "2026-09-21" },
+    { "subject": "메타코드 특강", "goal": "③Claude Code 업무자동화 강의 수강", "hours": 1, "deadline": "2026-09-21" },
+    { "subject": "메타코드 특강", "goal": "④Analytics Engineer 직무트렌드 강의 수강", "hours": 1, "deadline": "2026-09-30" }
   ],
   "deadlines": [
-    { "title": "컴활1급 실기 결과 발표", "date": "2026-08-25" },
-    { "title": "DB손해보험 하반기 공채 서류 마감 (잠정, 공고 확정시 수정 필요)", "date": "2026-10-10" },
+    { "title": "컴활1급 실기", "date": "2026-08-25" },
+    { "title": "DB손해보험 하반기 공채 서류 마감", "date": "2026-10-02" },
     { "title": "삼성생명 상품계리 하반기 공채 서류 마감 (잠정, 공고 확정시 수정 필요)", "date": "2026-10-10" },
     { "title": "코리안리 계리 하반기 공채 서류 마감 (잠정, 공고 확정시 수정 필요)", "date": "2026-10-10" },
+    { "subject": "메타코드 특강", "goal": "①이커머스 분석 시각화 강의 수강", "hours": 1, "deadline": "2026-09-07" },
+    { "subject": "메타코드 특강", "goal": "②데이터엔지니어링 채용트렌드 강의 수강", "hours": 1, "deadline": "2026-09-21" },
+    { "subject": "메타코드 특강", "goal": "③Claude Code 업무자동화 강의 수강", "hours": 1, "deadline": "2026-09-21" },
+    { "subject": "메타코드 특강", "goal": "④Analytics Engineer 직무트렌드 강의 수강", "hours": 1, "deadline": "2026-09-30" }
     { "title": "중간고사 시작", "date": "2026-10-20" },
     { "title": "중간고사 종료", "date": "2026-10-26" },
     { "title": "IELTS 응시 (날짜 미정, 잠정)", "date": "2026-11-15" },

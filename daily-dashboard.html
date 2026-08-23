@@ -428,6 +428,37 @@ code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--pap
       </div>
     </section>
 
+    <!-- 공채·공모전 진행 상황 -->
+    <section class="card wide" id="cardApps">
+      <h2>공채·공모전 진행 상황 <span class="count" id="appCount">0</span>
+        <span class="spacer"></span>
+        <span class="mini" id="appNext">—</span>
+      </h2>
+      <div class="row">
+        <input type="text" id="appCompany" placeholder="기업/공모전" style="width:132px">
+        <input type="text" id="appRole" class="grow" placeholder="직무 (예: 상품업무/U/W)">
+      </div>
+      <div class="row" style="margin-top:6px">
+        <select id="appStage" style="width:112px">
+          <option value="서류">서류</option>
+          <option value="서류결과">서류결과</option>
+          <option value="인적성/필기">인적성/필기</option>
+          <option value="1차면접">1차면접</option>
+          <option value="2차면접">2차면접</option>
+          <option value="채용검진">채용검진</option>
+          <option value="최종결과">최종결과</option>
+        </select>
+        <input type="text" id="appNextAction" class="grow" placeholder="다음 액션 (예: 온라인 인적성검사 응시)">
+        <input type="date" id="appNextDate">
+        <button class="btn" id="appAdd">추가</button>
+      </div>
+      <div id="appList" style="margin-top:6px"></div>
+      <details class="done-section" id="doneAppsWrap" style="display:none">
+        <summary id="doneAppsHead">결과가 나온 지원</summary>
+        <div id="doneAppList"></div>
+      </details>
+    </section>
+
     <!-- 할 일 -->
     <section class="card" id="cardTodo">
       <h2>할 일 <span class="count" id="todoCount">0</span></h2>
@@ -794,7 +825,7 @@ const DEFAULTS = {
 };
 let S = { version:5, savedAt:0, settings:Object.assign({},DEFAULTS),
   deadlines:[], todos:[], subjects:[], sessions:[], plans:[], habits:[],
-  sleep:{}, journal:{}, reviews:[], routine:[] };
+  sleep:{}, journal:{}, reviews:[], routine:[], applications:[] };
 let scope = "today", saveTimer = null, remoteSaveTimer = null, remoteSyncing = false;
 function save(){
   S.savedAt = Date.now();
@@ -834,7 +865,8 @@ function isEmptyState(){
   return S.todos.length===0 && S.sessions.length===0 && S.plans.length===0 &&
     S.subjects.length===0 && S.habits.length===0 && S.deadlines.length===0 &&
     S.reviews.length===0 && !Object.keys(S.journal||{}).length &&
-    !Object.keys(S.sleep||{}).length && (S.routine||[]).length===0;
+    !Object.keys(S.sleep||{}).length && (S.routine||[]).length===0 &&
+    (S.applications||[]).length===0;
 }
 async function pushRemoteState(){
   if (!S.settings.scriptUrl || remoteSyncing) return;
@@ -1678,6 +1710,139 @@ function completePlan(p){
   save(); renderPlans(); toast("완료 목록으로 옮겼습니다.");
 }
 
+/* ── 공채·공모전 진행 상황 ────────────────────────────
+   단계·다음 액션만 빠르게 갱신하는 용도. 지원 시점에 기업만 등록해두고,
+   결과가 나올 때마다 그 자리에서 단계를 바꾸거나 합격/불합격을 누른다.
+   기업·직무 등 나머지 항목을 고칠 땐 "수정"으로 위 입력창을 다시 채워 저장한다
+   (계획 카드처럼 매번 항목 자체를 새로 만들지 않는다). */
+let editingAppId = null;
+function sortedApps(){
+  return S.applications.slice().sort((a,b)=>
+    (a.nextDate||"9999-99-99").localeCompare(b.nextDate||"9999-99-99") ||
+    a.company.localeCompare(b.company));
+}
+function appRowHtml(a){
+  const t = today();
+  let dd = "";
+  if (a.nextDate){
+    const n = diffDays(t, a.nextDate);
+    dd = '<span class="mini">'+(n===0?"D-DAY":n>0?"D-"+n:"D+"+Math.abs(n))+'</span>';
+  }
+  return '<div class="plan" data-id="'+a.id+'">'+
+    '<div class="plan-top"><span class="tag">'+esc(a.stage||"서류")+'</span>'+
+      '<span class="g">'+esc(a.company)+(a.role?' · '+esc(a.role):"")+'</span>'+
+      '<button class="ghost sm" data-act="editapp" title="기업·직무·단계 수정">수정</button>'+
+      '<button class="ghost sm" data-act="passapp" title="합격 처리">합격</button>'+
+      '<button class="ghost sm" data-act="failapp" title="불합격 처리">불합격</button>'+
+      '<button class="icon-btn" data-act="delapp" title="삭제">×</button></div>'+
+    '<div class="plan-meta">'+
+      (a.nextAction?'<span class="mini">다음 <b>'+esc(a.nextAction)+'</b></span>':"")+dd+
+    '</div></div>';
+}
+function doneAppHtml(a){
+  return '<div class="done-plan plan" data-id="'+a.id+'">'+
+    '<span class="tag">'+esc(a.stage||"—")+'</span>'+
+    '<span class="g">'+esc(a.company)+(a.role?' · '+esc(a.role):"")+'</span>'+
+    '<span class="on-date">'+esc(a.outcome||"")+(a.resultOn?" · "+shortDate(a.resultOn):"")+'</span>'+
+    '<button class="ghost sm" data-act="undoapp" title="진행 중으로 되돌리기">되돌리기</button>'+
+    '<button class="icon-btn" data-act="delapp" title="삭제">×</button></div>';
+}
+function renderApps(){
+  const active = sortedApps().filter(a=>!a.done);
+  const done = S.applications.filter(a=>a.done)
+    .sort((a,b)=>(b.resultOn||"").localeCompare(a.resultOn||""));
+
+  document.getElementById("appCount").textContent = active.length;
+
+  const withDate = active.filter(a=>a.nextDate).sort((a,b)=>a.nextDate.localeCompare(b.nextDate));
+  const nextOne = withDate[0];
+  document.getElementById("appNext").textContent = nextOne
+    ? "다음 "+nextOne.company+" "+(nextOne.nextAction||nextOne.stage)+" ("+nextOne.nextDate+")"
+    : "—";
+
+  const el = document.getElementById("appList");
+  el.innerHTML = active.length
+    ? active.map(appRowHtml).join("")
+    : '<div class="empty">지원한 기업·공모전을 등록하면 단계와 다음 액션을 한눈에 볼 수 있습니다.</div>';
+
+  const wrap = document.getElementById("doneAppsWrap");
+  const head = document.getElementById("doneAppsHead");
+  const list = document.getElementById("doneAppList");
+  if (done.length){
+    wrap.style.display = ""; head.textContent = "결과가 나온 지원 " + done.length + "개";
+    list.innerHTML = done.map(doneAppHtml).join("");
+  } else { wrap.style.display = "none"; wrap.open = false; list.innerHTML = ""; }
+}
+function resetAppForm(){
+  document.getElementById("appCompany").value = "";
+  document.getElementById("appRole").value = "";
+  document.getElementById("appStage").value = "서류";
+  document.getElementById("appNextAction").value = "";
+  document.getElementById("appNextDate").value = "";
+  document.getElementById("appAdd").textContent = "추가";
+  editingAppId = null;
+}
+document.getElementById("appAdd").addEventListener("click", ()=>{
+  const company = document.getElementById("appCompany").value.trim();
+  if (!company){ toast("기업·공모전 이름을 입력하세요."); return; }
+  const role = document.getElementById("appRole").value.trim();
+  const stage = document.getElementById("appStage").value;
+  const nextAction = document.getElementById("appNextAction").value.trim();
+  const nextDate = document.getElementById("appNextDate").value;
+  if (editingAppId){
+    const a = S.applications.find(x=>x.id===editingAppId);
+    if (a) Object.assign(a, { company, role, stage, nextAction, nextDate });
+  } else {
+    S.applications.push({ id:uid(), company, role, stage, nextAction, nextDate,
+      done:false, outcome:"", resultOn:"" });
+  }
+  resetAppForm();
+  save(); renderApps();
+});
+document.getElementById("appList").addEventListener("click", e=>{
+  const row = e.target.closest(".plan"); if(!row) return;
+  const a = S.applications.find(x=>x.id===row.dataset.id); if(!a) return;
+  if (e.target.closest('[data-act="editapp"]')){
+    editingAppId = a.id;
+    document.getElementById("appCompany").value = a.company;
+    document.getElementById("appRole").value = a.role||"";
+    document.getElementById("appStage").value = a.stage||"서류";
+    document.getElementById("appNextAction").value = a.nextAction||"";
+    document.getElementById("appNextDate").value = a.nextDate||"";
+    document.getElementById("appAdd").textContent = "저장";
+    document.getElementById("appCompany").focus();
+    return;
+  }
+  if (e.target.closest('[data-act="passapp"]')){
+    a.done = true; a.outcome = "합격"; a.resultOn = today();
+    save(); renderApps(); toast("합격으로 표시했습니다.");
+    return;
+  }
+  if (e.target.closest('[data-act="failapp"]')){
+    a.done = true; a.outcome = "불합격"; a.resultOn = today();
+    save(); renderApps(); toast("결과를 기록했습니다.");
+    return;
+  }
+  if (e.target.closest('[data-act="delapp"]')){
+    if (editingAppId===a.id) resetAppForm();
+    S.applications = S.applications.filter(x=>x.id!==a.id);
+    save(); renderApps();
+  }
+});
+document.getElementById("doneAppList").addEventListener("click", e=>{
+  const row = e.target.closest(".plan"); if(!row) return;
+  const a = S.applications.find(x=>x.id===row.dataset.id); if(!a) return;
+  if (e.target.closest('[data-act="undoapp"]')){
+    a.done = false; a.outcome = ""; a.resultOn = "";
+    save(); renderApps();
+    return;
+  }
+  if (e.target.closest('[data-act="delapp"]')){
+    S.applications = S.applications.filter(x=>x.id!==a.id);
+    save(); renderApps();
+  }
+});
+
 /* ── 추천 계획 ─────────────────────────────────────────
    파일에 내장된 기본 계획. 설정에 JSON 주소를 넣으면
    그쪽을 먼저 읽으므로, 계획만 바꿀 때는 이 파일을 건드릴 필요가 없다. */
@@ -1793,8 +1958,17 @@ function applyPlan(seed){
   return true;
 }
 
-/* 주소가 지정돼 있으면 그쪽을, 아니면 내장 계획을 쓴다 */
+/* 브리지에 저장된 계획(setPlan으로 붙여넣은 것)을 먼저, 그 다음 planUrl을,
+   둘 다 없으면 내장 계획을 쓴다 */
 document.getElementById("planSeed").addEventListener("click", async ()=>{
+  if (mode()==="script" && (S.settings.scriptUrl||"").trim()){
+    toast("계획을 받아오는 중…");
+    const res = await stateRequest({ action:"getPlan" });
+    if (res && res.data){
+      try{ applyPlan(normalizePlan(JSON.parse(res.data))); return; }
+      catch(err){ console.warn("브리지에 저장된 계획 파싱 실패", err); }
+    }
+  }
   const url = (S.settings.planUrl||"").trim();
   if (!url){ applyPlan(SEED); return; }
   toast("계획을 받아오는 중…");
@@ -1810,8 +1984,9 @@ document.getElementById("planSeed").addEventListener("click", async ()=>{
   }
 });
 
-/* 붙여넣기로 적용 */
-document.getElementById("planApplyJson").addEventListener("click", ()=>{
+/* 붙여넣기로 적용 — 로컬 적용 후, 브리지가 설정돼 있으면 다른 기기에서도
+   "추천 계획 불러오기"로 받을 수 있게 원본 JSON을 브리지에도 저장해둔다 */
+document.getElementById("planApplyJson").addEventListener("click", async ()=>{
   const ta = document.getElementById("cfgPlanJson");
   const raw = ta.value.trim();
   if (!raw){ toast("붙여넣은 내용이 없습니다."); return; }
@@ -1819,6 +1994,10 @@ document.getElementById("planApplyJson").addEventListener("click", ()=>{
     if (applyPlan(normalizePlan(JSON.parse(raw)))){
       ta.value = "";
       document.getElementById("sheetClose").click();
+      if (mode()==="script" && (S.settings.scriptUrl||"").trim()){
+        const res = await stateRequest({ action:"setPlan", data:raw });
+        toast(res ? "계획을 다른 기기와 동기화했습니다." : "로컬에는 적용됐지만 동기화 저장은 실패했습니다.");
+      }
     }
   }catch(err){ toast("적용 실패: " + err.message); }
 });
@@ -2528,6 +2707,7 @@ document.getElementById("fileImport").addEventListener("change", e=>{
       S = Object.assign(S, data);
       S.settings = Object.assign({}, DEFAULTS, S.settings||{});
       S.sleep = S.sleep||{}; S.journal = S.journal||{}; S.reviews = S.reviews||[];
+      S.applications = S.applications||[];
       save(); applyTheme(); renderModeLabel(); renderSubjects();
       document.getElementById("journal").dataset.d = "";
       renderAll();
@@ -2543,7 +2723,7 @@ function renderAll(){
   renderTimetable();
   barSet("todayBars", today(), today());
   barSet("weekBars", weekStart(), weekEnd());
-  renderPlans(); renderRoutine(); renderHabits(); renderSleep(); renderReviews();
+  renderPlans(); renderApps(); renderRoutine(); renderHabits(); renderSleep(); renderReviews();
   renderJournal(); renderWeek(); renderClosing(); renderEventList();
 }
 
@@ -2554,6 +2734,7 @@ function renderAll(){
   S.settings = Object.assign({}, DEFAULTS, S.settings||{});
   S.sleep = S.sleep||{}; S.journal = S.journal||{}; S.reviews = S.reviews||[];
   S.routine = S.routine||[];
+  S.applications = S.applications||[];
 
   await initialSync({silent:true});
 

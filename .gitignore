@@ -1,0 +1,17 @@
+# Real personal data must never be committed to this public repo again.
+# The dashboard's real state lives only in the browser's localStorage
+# (key: daily-dashboard-v1). Only data/public-demo.json (fake/sample data)
+# is meant to be tracked under data/.
+plan.json
+dashboard-*.json
+data/*.json
+!data/public-demo.json
+
+# Local export/backup files, whatever they get named
+*backup*.json
+*.local.json
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp

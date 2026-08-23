@@ -1,0 +1,47 @@
+{
+  "_notice": "This is sample/demo data for public preview only. It contains no real personal information. Real data lives only in your browser's local storage — see README.md.",
+  "version": 2,
+  "savedAt": 0,
+  "settings": {
+    "theme": "light",
+    "logSessions": false,
+    "duration": 60,
+    "sleepGoal": 7,
+    "weeklyCap": 25,
+    "intervals": [1, 3, 7, 16, 35],
+    "planUrl": "",
+    "calMode": "script",
+    "scriptUrl": "",
+    "scriptToken": "",
+    "clientId": "",
+    "pomodoro": 25,
+    "pomoOn": false
+  },
+  "deadlines": [
+    { "id": "demo1", "title": "Sample Deadline A", "date": "2099-01-01" },
+    { "id": "demo2", "title": "Sample Deadline B", "date": "2099-02-01" }
+  ],
+  "todos": [
+    { "id": "demo-todo-1", "text": "Sample to-do item", "done": false }
+  ],
+  "subjects": ["Sample Subject A", "Sample Subject B", "Sample Subject C"],
+  "sessions": [],
+  "plans": [
+    {
+      "id": "demo-plan-1",
+      "subjectId": "Sample Subject A",
+      "goal": "Sample goal text",
+      "progress": 0,
+      "weeklyTarget": 4,
+      "deadline": "2099-03-01",
+      "paused": false,
+      "done": false,
+      "completedOn": null
+    }
+  ],
+  "habits": [],
+  "routine": {},
+  "sleep": {},
+  "journal": {},
+  "reviews": []
+}

@@ -194,6 +194,9 @@ li.done .t-text{color:var(--ink3);text-decoration:line-through}
 
 .plan{padding:11px 0;border-bottom:1px solid var(--rule2)}
 .plan:last-child{border-bottom:none}
+.plan:not(.done-plan){padding-left:10px;padding-right:6px;border-left:3px solid transparent}
+.plan.in-period{border-left-color:var(--accent);background:var(--accent-soft);border-radius:0 var(--r) var(--r) 0}
+.plan.no-period{border-left-color:var(--warn);background:color-mix(in srgb, var(--warn) 12%, transparent);border-radius:0 var(--r) var(--r) 0}
 .plan-top{display:flex;align-items:baseline;gap:8px}
 .plan-top .g{flex:1;font-weight:500}
 .plan-meta{display:flex;gap:14px;margin-top:7px;align-items:center;flex-wrap:wrap}
@@ -439,16 +442,23 @@ code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--pap
         <input type="text" id="appRole" class="grow" placeholder="직무 (예: 상품업무/U/W)">
       </div>
       <div class="row" style="margin-top:6px">
-        <select id="appStage" style="width:112px">
-          <option value="서류">서류</option>
-          <option value="서류결과">서류결과</option>
-          <option value="인적성/필기">인적성/필기</option>
-          <option value="1차면접">1차면접</option>
-          <option value="2차면접">2차면접</option>
-          <option value="채용검진">채용검진</option>
-          <option value="최종결과">최종결과</option>
-        </select>
-        <input type="text" id="appNextAction" class="grow" placeholder="다음 액션 (예: 온라인 인적성검사 응시)">
+        <input type="text" id="appStage" list="appStageOptions" placeholder="단계 (예: 서류, 1차 멘토링)" style="width:132px">
+        <datalist id="appStageOptions">
+          <option value="서류"></option>
+          <option value="서류결과"></option>
+          <option value="인적성/필기"></option>
+          <option value="1차면접"></option>
+          <option value="2차면접"></option>
+          <option value="채용검진"></option>
+          <option value="최종결과"></option>
+          <option value="접수"></option>
+          <option value="1차 멘토링"></option>
+          <option value="2차 멘토링"></option>
+          <option value="예선심사"></option>
+          <option value="본선발표"></option>
+          <option value="결과"></option>
+        </datalist>
+        <input type="text" id="appNextAction" class="grow" placeholder="다음 액션 (예: 2차 멘토링 자료 제출)">
         <input type="date" id="appNextDate">
         <button class="btn" id="appAdd">추가</button>
       </div>
@@ -529,9 +539,11 @@ code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--pap
       </div>
       <div class="row" style="margin-top:6px">
         <input type="number" id="planHours" placeholder="주간 목표h" style="width:104px" min="0" step="0.5">
-        <input type="date" id="planDeadline">
+        <input type="date" id="planStartDate" title="시작일">
+        <input type="date" id="planDeadline" title="마감일">
         <button class="btn" id="planAdd">추가</button>
       </div>
+      <div class="hint">시작일과 마감일을 함께 넣으면 몇 주짜리 계획인지, 지금이 몇 주차인지 보여줍니다.</div>
       <div id="planList" style="margin-top:6px"></div>
       <details class="done-section" id="pausedPlansWrap" style="display:none">
         <summary id="pausedPlansHead">보류 중인 계획</summary>
@@ -736,15 +748,6 @@ code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--pap
     </div>
 
     <div class="field">
-      <label for="cfgPlanUrl">추천 계획 주소 (JSON URL)</label>
-      <input type="url" id="cfgPlanUrl" placeholder="https://아이디.github.io/plan.json">
-      <div class="hint">
-        비워두면 파일에 내장된 기본 계획을 씁니다. 주소를 넣으면 &lsquo;추천 계획 불러오기&rsquo;가
-        그 주소에서 최신 계획을 받아옵니다. JSON 파일만 고치면 대시보드는 그대로 두고 계획을 바꿀 수 있습니다.
-      </div>
-    </div>
-
-    <div class="field">
       <label for="cfgPlanJson">계획 JSON 직접 붙여넣기</label>
       <textarea id="cfgPlanJson" rows="5" placeholder='{"name":"2026-2학기","subjects":[],"plans":[],"deadlines":[]}'></textarea>
       <div class="row" style="margin-top:6px">
@@ -820,12 +823,13 @@ const Store = {
 
 const DEFAULTS = {
   theme:"light", logSessions:false, duration:60,
-  sleepGoal:7, weeklyCap:25, intervals:[1,3,7,16,35], planUrl:"",
+  sleepGoal:7, weeklyCap:25, intervals:[1,3,7,16,35],
   calMode:"script", scriptUrl:"", scriptToken:"", clientId:""
 };
 let S = { version:5, savedAt:0, settings:Object.assign({},DEFAULTS),
   deadlines:[], todos:[], subjects:[], sessions:[], plans:[], habits:[],
-  sleep:{}, journal:{}, reviews:[], routine:[], applications:[] };
+  sleep:{}, journal:{}, reviews:[], routine:[], applications:[],
+  dismissedPlans:[] /* 삭제한 계획의 {subject,goal} — 추천 계획 불러오기가 되살리지 않도록 기억 */ };
 let scope = "today", saveTimer = null, remoteSaveTimer = null, remoteSyncing = false;
 function save(){
   S.savedAt = Date.now();
@@ -937,9 +941,11 @@ function hm(d){ return pad(d.getHours())+":"+pad(d.getMinutes()); }
 function today(){ return ymd(new Date()); }
 function addDays(str,n){ const d=new Date(str+"T00:00:00"); d.setDate(d.getDate()+n); return ymd(d); }
 function diffDays(a,b){ return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/86400000); }
-function weekStart(){ const d=new Date(); d.setDate(d.getDate()-d.getDay()); return ymd(d); }
+function weekStartOf(str){ const d=new Date(str+"T00:00:00"); d.setDate(d.getDate()-d.getDay()); return ymd(d); }
+function weekStart(){ return weekStartOf(today()); }
 function weekEnd(){ return addDays(weekStart(),6); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+const DEL_X = String.fromCharCode(0xd7);  /* 삭제 버튼에 쓰는 × 기호 */
 function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function fmtHM(min){ const h=Math.floor(min/60), m=Math.round(min%60); return h? h+"시간 "+m+"분" : m+"분"; }
 /* 분 → hh:mm */
@@ -1603,17 +1609,36 @@ function barSet(elId, from, to){
     '<div class="val">'+fmtClock(x.min)+'</div></div>').join("");
 }
 
-/* ══ 공부 계획 ══════════════════════════════════════════ */
+/* ══ 공부 계획 ══════════════════════════════════════════
+   추가 폼은 "수정"을 누르면 그 계획 값을 채우고 편집 모드로 바뀐다
+   (공채·공모전 카드의 editingAppId와 같은 방식) — 매번 새로 만들지 않고
+   기존 계획의 목표·주간 목표시간·기간만 고쳐 쓸 수 있게 하기 위함 */
+let expandedPlanTasks = new Set();  /* '다른 주차' 펼침 상태 — 다시 그릴 때도 유지 */
+let editingPlanId = null;
+function resetPlanForm(){
+  document.getElementById("planGoal").value = "";
+  document.getElementById("planHours").value = "";
+  document.getElementById("planStartDate").value = "";
+  document.getElementById("planDeadline").value = "";
+  document.getElementById("planAdd").textContent = "추가";
+  editingPlanId = null;
+}
 document.getElementById("planAdd").addEventListener("click", ()=>{
   const sid = document.getElementById("planSubject").value;
   const goal = document.getElementById("planGoal").value.trim();
   if(!sid){ toast("과목을 먼저 등록해 주세요."); return; }
   if(!goal){ toast("목표를 입력하세요."); return; }
-  S.plans.push({ id:uid(), subjectId:sid, goal, progress:0,
-    weeklyTarget:parseFloat(document.getElementById("planHours").value)||0,
-    deadline:document.getElementById("planDeadline").value||"" });
-  document.getElementById("planGoal").value="";
-  document.getElementById("planHours").value="";
+  const weeklyTarget = parseFloat(document.getElementById("planHours").value)||0;
+  const startDate = document.getElementById("planStartDate").value||"";
+  const deadline = document.getElementById("planDeadline").value||"";
+  if (editingPlanId){
+    const p = S.plans.find(x=>x.id===editingPlanId);
+    if (p) Object.assign(p, { subjectId:sid, goal, weeklyTarget, startDate, deadline });
+  } else {
+    S.plans.push({ id:uid(), subjectId:sid, goal, progress:0,
+      weeklyTarget, startDate, deadline, tasks:[] });
+  }
+  resetPlanForm();
   save(); renderAll();
 });
 /* 마감이 가까운 순 — 마감 없는 계획은 맨 뒤 */
@@ -1621,6 +1646,16 @@ function sortedPlans(){
   return S.plans.slice().sort((a,b)=>
     (a.deadline||"9999-99-99").localeCompare(b.deadline||"9999-99-99") ||
     a.goal.localeCompare(b.goal));
+}
+/* 마감일이 없으면 기간 자체가 할당되지 않은 계획 — 노란색 계열로 별도 구분 */
+function planNoDeadline(p){ return !p.deadline; }
+/* 마감일이 있고 오늘이 그 이전이면 "실행 구간 안" — 시작일이 없으면
+   하한이 없는 것으로 보고 이미 시작한 것으로 간주한다 */
+function planInPeriod(p){
+  if (!p.deadline) return false;
+  const t = today();
+  if (p.startDate && t < p.startDate) return false;
+  return t <= p.deadline;
 }
 function planRowHtml(p){
   const ws = weekStart(), we = weekEnd(), t = today();
@@ -1634,18 +1669,78 @@ function planRowHtml(p){
     const n = diffDays(t, p.deadline);
     dd = '<span class="mini">마감 <b>'+(n===0?"D-DAY":n>0?"D-"+n:"D+"+Math.abs(n))+'</b></span>';
   }
-  return '<div class="plan" data-id="'+p.id+'">'+
+  const periodCls = planNoDeadline(p) ? " no-period" : (planInPeriod(p) ? " in-period" : "");
+  return '<div class="plan'+periodCls+'" data-id="'+p.id+'">'+
     '<div class="plan-top"><span class="tag">'+esc(subj?subj.name:"\u2014")+'</span>'+
       '<span class="g">'+esc(p.goal)+'</span>'+
+      '<button class="ghost sm" data-act="editplan" title="목표·주간 목표시간·기간 수정">수정</button>'+
       '<button class="ghost sm" data-act="pauseplan" title="이번 학기에 실행하지 않음 — 주간 합계에서 빠집니다">보류</button>'+
       '<button class="ghost sm" data-act="doneplan" title="완료 처리">완료</button>'+
       '<button class="icon-btn" data-act="delplan" title="삭제">\u00d7</button></div>'+
     '<div class="plan-meta"><span class="mini">진도 <b>'+p.progress+'%</b></span>'+
       (targetMin
         ? '<span class="mini">이번 주 <b>'+fmtClock(actualMin)+'</b> / '+fmtClock(targetMin)+' ('+Math.round(pct)+'%)</span>'
-        : '<span class="mini">이번 주 <b>'+fmtClock(actualMin)+'</b></span>')+dd+'</div>'+
+        : '<span class="mini">이번 주 <b>'+fmtClock(actualMin)+'</b></span>')+dd+planWeeksInfo(p)+'</div>'+
     '<div class="track" style="margin-top:8px"><div class="fill" style="width:'+p.progress+'%"></div></div>'+
-    '<input type="range" min="0" max="100" step="5" value="'+p.progress+'" data-act="prog"></div>';
+    '<input type="range" min="0" max="100" step="5" value="'+p.progress+'" data-act="prog">'+
+    planTasksHtml(p)+
+    '</div>';
+}
+/* 시작일이 있을 때만 "기간 · N/M주차"를 보여준다 — 없으면 빈 문자열(기존 계획과 호환) */
+function planWeeksInfo(p){
+  if (!p.startDate) return "";
+  const ws0 = weekStartOf(p.startDate);
+  const idx = Math.floor(diffDays(ws0, weekStart())/7) + 1;
+  const range = shortDate(p.startDate) + "~" + (p.deadline ? shortDate(p.deadline) : "");
+  let label;
+  if (p.deadline){
+    const total = Math.floor(diffDays(ws0, weekStartOf(p.deadline))/7) + 1;
+    label = idx < 1 ? "시작 전" : idx > total ? "기간 종료" : idx+"/"+total+"주차";
+  } else {
+    label = idx < 1 ? "시작 전" : idx+"주차";
+  }
+  return '<span class="mini">기간 <b>'+range+'</b> · <b>'+label+'</b></span>';
+}
+/* 이번 주에 배정된 실행과제 한 줄 — 할 일 목록과 같은 .check/.t-text 스타일 재사용 */
+function planTaskLi(t){
+  return '<li class="'+(t.done?"done":"")+'" data-tid="'+t.id+'">'+
+    '<button class="check'+(t.done?" on":"")+'" data-act="tdone" aria-label="완료"></button>'+
+    '<span class="t-body"><span class="t-text">'+esc(t.text)+'</span></span>'+
+    '<button class="icon-btn" data-act="tdel" title="삭제">'+DEL_X+'</button></li>';
+}
+/* 다른 주차 실행과제는 배정된 주도 함께 보여준다 */
+function planOtherTaskLi(t){
+  return '<li class="'+(t.done?"done":"")+'" data-tid="'+t.id+'">'+
+    '<button class="check'+(t.done?" on":"")+'" data-act="tdone" aria-label="완료"></button>'+
+    '<span class="t-body"><span class="t-text">'+esc(t.text)+'</span>'+
+      '<span class="due">'+shortDate(t.week)+'주</span></span>'+
+    '<button class="icon-btn" data-act="tdel" title="삭제">'+DEL_X+'</button></li>';
+}
+/* 계획 카드 안에 들어가는 '이번 주 실행과제' 입력·목록 + '다른 주차' 접이식 목록 */
+function planTasksHtml(p){
+  const ws = weekStart();
+  const tasks = p.tasks||[];
+  const cur = tasks.filter(t=>t.week===ws);
+  const other = tasks.filter(t=>t.week!==ws).slice().sort((a,b)=>a.week.localeCompare(b.week));
+  const curHtml = cur.length
+    ? '<ul class="list">'+cur.map(planTaskLi).join("")+'</ul>'
+    : '<div class="empty" style="padding:8px 0">이번 주로 배정된 실행과제가 없습니다.</div>';
+  const otherHtml = other.length
+    ? '<details class="done-section ptasks-more" data-id="'+p.id+'" style="margin-top:9px"'+(expandedPlanTasks.has(p.id)?" open":"")+'>'+
+        '<summary>다른 주차 실행과제 '+other.length+'개</summary>'+
+        '<ul class="list">'+other.map(planOtherTaskLi).join("")+'</ul>'+
+      '</details>'
+    : "";
+  return '<div class="ptasks" style="margin-top:11px;border-top:1px solid var(--rule2);padding-top:9px">'+
+      '<div class="eyebrow">이번 주 실행과제</div>'+
+      '<div class="row" style="margin-top:7px">'+
+        '<input type="text" class="grow" data-act="tinput" placeholder="예: 문제정의 초안 작성">'+
+        '<input type="date" data-act="tweek" value="'+ws+'" style="width:132px" title="배정할 주 — 그 주의 아무 날짜">'+
+        '<button class="ghost sm" data-act="tadd">추가</button>'+
+      '</div>'+
+      '<div style="margin-top:7px">'+curHtml+'</div>'+
+      otherHtml+
+    '</div>';
 }
 function pausedPlanHtml(p){
   const subj = S.subjects.find(s=>s.id===p.subjectId);
@@ -1654,6 +1749,7 @@ function pausedPlanHtml(p){
     '<span class="tag">'+esc(subj?subj.name:"\u2014")+'</span>'+
     '<span class="g">'+esc(p.goal)+'</span>'+
     '<span class="on-date">'+(tgt?"주 "+fmtClock(tgt):"목표 없음")+'</span>'+
+    '<button class="ghost sm" data-act="editplan" title="목표·주간 목표시간·기간 수정">수정</button>'+
     '<button class="ghost sm" data-act="resumeplan" title="다시 진행 중으로">재개</button>'+
     '<button class="icon-btn" data-act="delplan" title="삭제">\u00d7</button></div>';
 }
@@ -1729,7 +1825,7 @@ function appRowHtml(a){
     dd = '<span class="mini">'+(n===0?"D-DAY":n>0?"D-"+n:"D+"+Math.abs(n))+'</span>';
   }
   return '<div class="plan" data-id="'+a.id+'">'+
-    '<div class="plan-top"><span class="tag">'+esc(a.stage||"서류")+'</span>'+
+    '<div class="plan-top"><span class="tag">'+esc(a.stage||"—")+'</span>'+
       '<span class="g">'+esc(a.company)+(a.role?' · '+esc(a.role):"")+'</span>'+
       '<button class="ghost sm" data-act="editapp" title="기업·직무·단계 수정">수정</button>'+
       '<button class="ghost sm" data-act="passapp" title="합격 처리">합격</button>'+
@@ -1776,7 +1872,7 @@ function renderApps(){
 function resetAppForm(){
   document.getElementById("appCompany").value = "";
   document.getElementById("appRole").value = "";
-  document.getElementById("appStage").value = "서류";
+  document.getElementById("appStage").value = "";
   document.getElementById("appNextAction").value = "";
   document.getElementById("appNextDate").value = "";
   document.getElementById("appAdd").textContent = "추가";
@@ -1786,7 +1882,7 @@ document.getElementById("appAdd").addEventListener("click", ()=>{
   const company = document.getElementById("appCompany").value.trim();
   if (!company){ toast("기업·공모전 이름을 입력하세요."); return; }
   const role = document.getElementById("appRole").value.trim();
-  const stage = document.getElementById("appStage").value;
+  const stage = document.getElementById("appStage").value.trim();
   const nextAction = document.getElementById("appNextAction").value.trim();
   const nextDate = document.getElementById("appNextDate").value;
   if (editingAppId){
@@ -1806,7 +1902,7 @@ document.getElementById("appList").addEventListener("click", e=>{
     editingAppId = a.id;
     document.getElementById("appCompany").value = a.company;
     document.getElementById("appRole").value = a.role||"";
-    document.getElementById("appStage").value = a.stage||"서류";
+    document.getElementById("appStage").value = a.stage||"";
     document.getElementById("appNextAction").value = a.nextAction||"";
     document.getElementById("appNextDate").value = a.nextDate||"";
     document.getElementById("appAdd").textContent = "저장";
@@ -1899,7 +1995,11 @@ function normalizePlan(obj){
       subject: p.subject.trim(), goal: p.goal.trim(),
       hours: Number(p.hours) > 0 ? Number(p.hours) : 0,
       paused: !!p.paused,
-      deadline: isDate(p.deadline) ? p.deadline : ""
+      startDate: isDate(p.startDate) ? p.startDate : "",
+      deadline: isDate(p.deadline) ? p.deadline : "",
+      tasks: (Array.isArray(p.tasks)?p.tasks:[])
+        .filter(tk=>tk && typeof tk.text==="string" && tk.text.trim() && isDate(tk.week))
+        .map(tk=>({ week: weekStartOf(tk.week), text: tk.text.trim(), done: !!tk.done }))
     }));
   const deadlines = (Array.isArray(obj.deadlines)?obj.deadlines:[])
     .filter(d=>d && typeof d.title==="string" && d.title.trim() && isDate(d.date))
@@ -1930,13 +2030,15 @@ function applyPlan(seed){
   seed.subjects.forEach(name=>{
     if (!S.subjects.some(s=>s.name===name)) S.subjects.push({ id:uid(), name });
   });
-  let nP = 0;
+  let nP = 0, nSkipped = 0;
   seed.plans.forEach(p=>{
     const subj = S.subjects.find(s=>s.name===p.subject);
     if (!subj) return;
     if (S.plans.some(x=>x.subjectId===subj.id && x.goal===p.goal)) return;
+    if ((S.dismissedPlans||[]).some(d=>d.subject===p.subject && d.goal===p.goal)){ nSkipped++; return; }
     S.plans.push({ id:uid(), subjectId:subj.id, goal:p.goal, progress:0,
-      weeklyTarget:p.hours, deadline:p.deadline, paused:!!p.paused });
+      weeklyTarget:p.hours, startDate:p.startDate||"", deadline:p.deadline, paused:!!p.paused,
+      tasks: (p.tasks||[]).map(tk=>({ id:uid(), week:tk.week, text:tk.text, done:!!tk.done })) });
     nP++;
   });
   let nD = 0;
@@ -1954,12 +2056,12 @@ function applyPlan(seed){
     nR++;
   });
   save(); renderSubjects(); renderAll();
-  toast("계획 "+nP+"개, D-day "+nD+"개"+(nR?", 복습 "+nR+"개":"")+"를 추가했습니다.");
+  toast("계획 "+nP+"개, D-day "+nD+"개"+(nR?", 복습 "+nR+"개":"")+"를 추가했습니다."+
+    (nSkipped?" (이전에 삭제한 계획 "+nSkipped+"개는 다시 추가하지 않았습니다)":""));
   return true;
 }
 
-/* 브리지에 저장된 계획(setPlan으로 붙여넣은 것)을 먼저, 그 다음 planUrl을,
-   둘 다 없으면 내장 계획을 쓴다 */
+/* 브리지에 저장된 계획(setPlan으로 붙여넣은 것)을 먼저, 없으면 내장 계획을 쓴다 */
 document.getElementById("planSeed").addEventListener("click", async ()=>{
   if (mode()==="script" && (S.settings.scriptUrl||"").trim()){
     toast("계획을 받아오는 중…");
@@ -1969,19 +2071,7 @@ document.getElementById("planSeed").addEventListener("click", async ()=>{
       catch(err){ console.warn("브리지에 저장된 계획 파싱 실패", err); }
     }
   }
-  const url = (S.settings.planUrl||"").trim();
-  if (!url){ applyPlan(SEED); return; }
-  toast("계획을 받아오는 중…");
-  try{
-    const bust = url + (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-    const res = await fetch(bust, { cache:"no-store" });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    applyPlan(normalizePlan(await res.json()));
-  }catch(err){
-    console.warn(err);
-    if (confirm("계획 주소에서 불러오지 못했습니다.\n("+err.message+")\n\n파일에 내장된 기본 계획을 대신 쓸까요?"))
-      applyPlan(SEED);
-  }
+  applyPlan(SEED);
 });
 
 /* 붙여넣기로 적용 — 로컬 적용 후, 브리지가 설정돼 있으면 다른 기기에서도
@@ -2011,7 +2101,9 @@ document.getElementById("planExportJson").addEventListener("click", ()=>{
       const subj = S.subjects.find(s=>s.id===p.subjectId);
       const o = { subject: subj?subj.name:"미분류", goal:p.goal,
                   hours:p.weeklyTarget||0, deadline:p.deadline||"" };
+      if (p.startDate) o.startDate = p.startDate;
       if (p.paused) o.paused = true;
+      if ((p.tasks||[]).length) o.tasks = p.tasks.map(tk=>({ week:tk.week, text:tk.text, done:!!tk.done }));
       return o;
     }),
     deadlines: S.deadlines.slice().sort((a,b)=>a.date.localeCompare(b.date))
@@ -2036,7 +2128,22 @@ function planClick(e){
   const act = btn.dataset.act;
   if (act==="delplan"){
     if (!confirm("'"+p.goal+"' 계획을 삭제할까요?")) return;
+    if (editingPlanId===p.id) resetPlanForm();
+    const subjName = (S.subjects.find(s=>s.id===p.subjectId)||{}).name || "";
+    S.dismissedPlans = S.dismissedPlans || [];
+    if (!S.dismissedPlans.some(d=>d.subject===subjName && d.goal===p.goal)){
+      S.dismissedPlans.push({ subject:subjName, goal:p.goal });
+    }
     S.plans = S.plans.filter(x=>x.id!==p.id); save(); renderAll();
+  } else if (act==="editplan"){
+    editingPlanId = p.id;
+    document.getElementById("planSubject").value = p.subjectId;
+    document.getElementById("planGoal").value = p.goal;
+    document.getElementById("planHours").value = p.weeklyTarget||"";
+    document.getElementById("planStartDate").value = p.startDate||"";
+    document.getElementById("planDeadline").value = p.deadline||"";
+    document.getElementById("planAdd").textContent = "저장";
+    document.getElementById("planGoal").focus();
   } else if (act==="pauseplan"){
     p.paused = true;
     save(); renderPlans(); renderWeek(); toast("'"+p.goal+"' 보류 — 주간 합계에서 뺐습니다.");
@@ -2049,11 +2156,41 @@ function planClick(e){
     p.done = false; p.completedOn = null;
     if (p.progress >= 100) p.progress = 95;
     save(); renderPlans(); renderWeek(); toast("진행 중으로 되돌렸습니다.");
+  } else if (act==="tadd"){
+    const wrap = btn.closest(".ptasks");
+    const input = wrap.querySelector('[data-act="tinput"]');
+    const weekInput = wrap.querySelector('[data-act="tweek"]');
+    const text = input.value.trim();
+    if (!text){ toast("실행과제 내용을 입력하세요."); return; }
+    p.tasks = p.tasks || [];
+    p.tasks.push({ id:uid(), week:weekStartOf(weekInput.value||today()), text, done:false });
+    save(); renderPlans(); toast("실행과제를 추가했습니다.");
+  } else if (act==="tdone"){
+    const tid = btn.closest("[data-tid]").dataset.tid;
+    const tk = (p.tasks||[]).find(x=>x.id===tid); if (!tk) return;
+    tk.done = !tk.done; save(); renderPlans();
+  } else if (act==="tdel"){
+    const tid = btn.closest("[data-tid]").dataset.tid;
+    p.tasks = (p.tasks||[]).filter(x=>x.id!==tid);
+    save(); renderPlans();
   }
 }
 document.getElementById("planList").addEventListener("click", planClick);
 document.getElementById("pausedPlanList").addEventListener("click", planClick);
 document.getElementById("donePlanList").addEventListener("click", planClick);
+/* details의 toggle 이벤트는 버블링하지 않으므로 캡처 단계에서 위임한다 —
+   그래야 renderPlans()로 다시 그려도 '다른 주차' 펼침 상태가 유지된다 */
+document.getElementById("planList").addEventListener("toggle", e=>{
+  const det = e.target.closest(".ptasks-more"); if(!det) return;
+  const id = det.dataset.id;
+  if (det.open) expandedPlanTasks.add(id); else expandedPlanTasks.delete(id);
+}, true);
+document.getElementById("planList").addEventListener("keydown", e=>{
+  if (e.key==="Enter" && e.target.dataset.act==="tinput"){
+    e.preventDefault();
+    e.target.closest(".ptasks").querySelector('[data-act="tadd"]').click();
+  }
+});
 
 /* ══ 습관 ═══════════════════════════════════════════════ */
 document.getElementById("habitAdd").addEventListener("click", ()=>{
@@ -2625,7 +2762,6 @@ function openSheet(){
   document.getElementById("cfgSleepGoal").value = S.settings.sleepGoal;
   document.getElementById("cfgWeeklyCap").value = S.settings.weeklyCap;
   document.getElementById("cfgIntervals").value = intervals().join(", ");
-  document.getElementById("cfgPlanUrl").value = S.settings.planUrl||"";
   syncModeBoxes(); renderDeadlines();
   document.getElementById("sheet").classList.add("on");
 }
@@ -2642,7 +2778,6 @@ document.getElementById("sheetClose").addEventListener("click", async ()=>{
   const iv = document.getElementById("cfgIntervals").value
     .split(",").map(x=>parseInt(x.trim(),10)).filter(x=>x>0);
   S.settings.intervals = iv.length ? iv : [1,3,7,16,35];
-  S.settings.planUrl = document.getElementById("cfgPlanUrl").value.trim();
   tokenClient = null; accessToken = null;
   document.getElementById("sheet").classList.remove("on");
   renderModeLabel(); setCalStatus("연결 안 됨","");

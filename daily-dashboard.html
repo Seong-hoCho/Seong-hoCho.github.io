@@ -42,6 +42,7 @@ if ("serviceWorker" in navigator) {
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
+  word-break:keep-all;overflow-wrap:break-word;
   background:var(--paper); color:var(--ink);
   font-family:"IBM Plex Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased;
@@ -141,7 +142,7 @@ textarea{width:100%;resize:vertical;line-height:1.75}
 .dl-kind.k-ev{color:var(--m-ev)} .dl-kind.k-todo{color:var(--m-todo)}
 .dl-kind.k-dl{color:var(--m-dl)} .dl-kind.k-rv{color:var(--m-rv)}
 .dl-kind.k-etc{color:var(--ink3)}
-.dl-item .txt{flex:1;word-break:break-word}
+.dl-item .txt{flex:1;word-break:keep-all;overflow-wrap:break-word}
 
 /* ── 과목 칩 ────────────────────────────── */
 .chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
@@ -176,7 +177,7 @@ ul.list li:last-child{border-bottom:none}
 .check.on::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid var(--card);border-width:0 1.5px 1.5px 0;transform:rotate(43deg)}
 [data-theme="dark"] .check.on::after{border-color:#0F1311}
 .t-body{flex:1;min-width:0}
-.t-text{word-break:break-word}
+.t-text{word-break:keep-all;overflow-wrap:break-word}
 li.done .t-text{color:var(--ink3);text-decoration:line-through}
 .t-meta{display:flex;gap:8px;align-items:center;margin-top:2px;flex-wrap:wrap}
 .pri{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;font-weight:600}
@@ -211,8 +212,8 @@ li.done .t-text{color:var(--ink3);text-decoration:line-through}
 .plan:not(.done-plan){padding-left:10px;padding-right:6px;border-left:3px solid transparent}
 .plan.in-period{border-left-color:var(--accent);background:var(--accent-soft);border-radius:0 var(--r) var(--r) 0}
 .plan.no-period{border-left-color:var(--warn);background:color-mix(in srgb, var(--warn) 12%, transparent);border-radius:0 var(--r) var(--r) 0}
-.plan-top{display:flex;align-items:baseline;gap:8px}
-.plan-top .g{flex:1;font-weight:500}
+.plan-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.plan-top .g{flex:1 1 140px;min-width:140px;font-weight:500}
 .plan-meta{display:flex;gap:14px;margin-top:7px;align-items:center;flex-wrap:wrap}
 .mini{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink3)}
 .mini b{color:var(--ink);font-weight:500}
@@ -232,23 +233,23 @@ input[type=range]{accent-color:var(--accent);width:100%;margin:9px 0 0}
 .rv{padding:9px 0;border-bottom:1px solid var(--rule2)}
 .rv:last-child{border-bottom:none}
 .rv-top{display:flex;gap:9px;align-items:flex-start}
-.rv-top .c{flex:1;word-break:break-word}
+.rv-top .c{flex:1;word-break:keep-all;overflow-wrap:break-word}
 .rv-meta{display:flex;gap:9px;align-items:center;margin-top:4px;flex-wrap:wrap}
 .boxlv{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--m-rv);border:1px solid var(--m-rv);border-radius:20px;padding:0 6px}
 .rv-acts{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
 .rv-answer{display:none;margin-top:6px;padding:8px 10px;background:var(--paper);
-  border-left:2px solid var(--m-rv);border-radius:0 var(--r) var(--r) 0;font-size:13px;word-break:break-word}
+  border-left:2px solid var(--m-rv);border-radius:0 var(--r) var(--r) 0;font-size:13px;word-break:keep-all;overflow-wrap:break-word}
 .rv-answer.on{display:block}
 .rv-hint{font-size:11.5px;color:var(--ink3);margin-top:6px}
-.done-plan{display:flex;gap:9px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--rule2)}
+.done-plan{display:flex;gap:9px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--rule2);flex-wrap:wrap}
 .done-plan:last-child{border-bottom:none}
-.done-plan .g{flex:1;color:var(--ink2);word-break:break-word}
+.done-plan .g{flex:1;color:var(--ink2);word-break:keep-all;overflow-wrap:break-word;min-width:120px}
 .done-plan .on-date{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink3)}
 
 .ev{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--rule2);align-items:flex-start}
 .ev:last-child{border-bottom:none}
 .ev-time{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--m-ev);width:104px;flex:none;padding-top:1px}
-.ev-title{flex:1;word-break:break-word}
+.ev-title{flex:1;word-break:keep-all;overflow-wrap:break-word}
 .ev.taken .ev-title{color:var(--ink3)}
 .taken-badge{font-size:11px;color:var(--ink3);border:1px solid var(--rule);border-radius:20px;padding:2px 8px;white-space:nowrap}
 .status{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink3)}

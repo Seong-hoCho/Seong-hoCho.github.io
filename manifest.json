@@ -1,6 +1,6 @@
 {
-  "name": "오늘의 계기판",
-  "short_name": "계기판",
+  "name": "Daily Dashboard",
+  "short_name": "Dashboard",
   "start_url": "./daily-dashboard.html",
   "scope": "./",
   "display": "standalone",

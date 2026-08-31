@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Daily Dashboard</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0F5D5B">
+<meta name="theme-color" content="#141414">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,20 +23,21 @@ if ("serviceWorker" in navigator) {
 
 <style>
 :root{
-  --paper:#EFF1EC; --card:#F9FAF7; --ink:#141816; --ink2:#5D655F; --ink3:#8B938D;
-  --rule:#D6DBD2; --rule2:#E5E9E1;
-  --accent:#0F5D5B; --accent-soft:#DCEAE6; --signal:#C41E4E; --warn:#9A5B06;
-  /* 달력 마크 — 서로 구분되는 다섯 색 */
-  --m-todo:#0E7C6B; --m-ev:#2F6FD0; --m-dl:#D62246; --m-rv:#E8A400; --m-jr:#7B4FBF;
-  --rt-anchor:#0F5D5B; --rt-study:#6B5B95; --rt-flex:#B5650F; --rt-rest:#8B938D; --rt-class:#2F6FD0;
-  --shadow:0 1px 0 rgba(20,24,22,.04); --r:3px;
+  /* Figma 마케팅 시스템 토큰 매핑 — 흑백 에디토리얼 기반 + 파스텔 블록 포인트 */
+  --paper:#F7F7F5; --card:#FFFFFF; --ink:#141414; --ink2:#63666B; --ink3:#9A9CA0;
+  --rule:#E6E6E6; --rule2:#F1F1F1;
+  --accent:#141414; --accent-soft:#DCEEB1; --signal:#C11458; --warn:#9C5024;
+  /* 달력 마크 — 서로 구분되는 다섯 색 (block-lime/navy/coral/cream/lilac 계열에서 파생) */
+  --m-todo:#5C7A29; --m-ev:#4A47A3; --m-dl:#C1512B; --m-rv:#B08900; --m-jr:#7757C9;
+  --rt-anchor:#141414; --rt-study:#7757C9; --rt-flex:#9C5024; --rt-rest:#9A9CA0; --rt-class:#4A47A3;
+  --shadow:none; --r:8px; --r-lg:16px; --r-pill:9999px;
 }
 [data-theme="dark"]{
-  --paper:#0F1311; --card:#171C19; --ink:#E9EDE9; --ink2:#9AA39D; --ink3:#6C756F;
+  --paper:#0F1311; --card:#171C19; --ink:#ECECEC; --ink2:#9AA39D; --ink3:#6C756F;
   --rule:#2A322D; --rule2:#212823;
-  --accent:#4FD1B8; --accent-soft:#17302B; --signal:#FF6B93; --warn:#D9A046;
-  --m-todo:#3FD0B2; --m-ev:#6BA6FF; --m-dl:#FF6B8A; --m-rv:#FFCA45; --m-jr:#BC94FF;
-  --rt-anchor:#4FD1B8; --rt-study:#B7A6E8; --rt-flex:#D9A046; --rt-rest:#6C756F; --rt-class:#6BA6FF;
+  --accent:#C6E88A; --accent-soft:#232A16; --signal:#FF6FA0; --warn:#E0955C;
+  --m-todo:#A8D65C; --m-ev:#8B87E0; --m-dl:#FF8F66; --m-rv:#FFCF4D; --m-jr:#C6A8FF;
+  --rt-anchor:#C6E88A; --rt-study:#C6A8FF; --rt-flex:#E0955C; --rt-rest:#6C756F; --rt-class:#8B87E0;
   --shadow:none;
 }
 *{box-sizing:border-box}
@@ -58,7 +59,7 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 header.top{padding:26px 0 14px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .today-date{font-size:30px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
 .top-actions{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
-.ghost{background:transparent;border:1px solid var(--rule);border-radius:var(--r);padding:6px 11px;font-size:12px;font-weight:500;color:var(--ink2)}
+.ghost{background:transparent;border:1px solid var(--rule);border-radius:var(--r-pill);padding:6px 11px;font-size:12px;font-weight:500;color:var(--ink2)}
 .ghost:hover{border-color:var(--ink3);color:var(--ink)}
 .ghost.sm{padding:4px 8px;font-size:11px}
 .dday-strip{display:flex;gap:18px;flex-wrap:wrap;align-items:baseline;margin-top:10px}
@@ -81,7 +82,7 @@ header.top{padding:26px 0 14px;display:flex;align-items:flex-start;gap:16px;flex
 .tip{position:fixed;z-index:60;background:var(--ink);color:var(--paper);padding:7px 10px;border-radius:var(--r);font-size:11px;pointer-events:none;opacity:0;transition:opacity .1s;font-family:"IBM Plex Mono",monospace;white-space:pre;line-height:1.5}
 
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.card{background:var(--card);border:1px solid var(--rule2);border-radius:var(--r);padding:17px 18px 18px;box-shadow:var(--shadow)}
+.card{background:var(--card);border:1px solid var(--rule2);border-radius:var(--r-lg);padding:17px 18px 18px;box-shadow:var(--shadow)}
 .card>h2{margin:0 0 13px;font-size:13px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .card>h2 .count{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink3);border:1px solid var(--rule);border-radius:20px;padding:1px 7px;font-weight:500}
 .card>h2 .count.due{color:var(--signal);border-color:var(--signal)}
@@ -96,11 +97,11 @@ input[type=text],input[type=date],input[type=time],input[type=number],input[type
 input::placeholder,textarea::placeholder{color:var(--ink3)}
 textarea{width:100%;resize:vertical;line-height:1.75}
 .grow{flex:1}
-.btn{background:var(--accent);color:var(--card);border:none;border-radius:var(--r);padding:7px 14px;font-size:13px;font-weight:500}
+.btn{background:var(--accent);color:var(--card);border:none;border-radius:var(--r-pill);padding:7px 14px;font-size:13px;font-weight:500}
 [data-theme="dark"] .btn{color:#0F1311}
 .btn:hover{filter:brightness(1.08)}
 .btn.sm{padding:5px 10px;font-size:12px}
-.icon-btn{background:none;border:none;color:var(--ink3);padding:2px 5px;font-size:13px;line-height:1;border-radius:var(--r)}
+.icon-btn{background:none;border:none;color:var(--ink3);padding:2px 5px;font-size:13px;line-height:1;border-radius:var(--r-pill)}
 .icon-btn:hover{color:var(--signal);background:var(--paper)}
 
 /* ── 달력 ───────────────────────────────── */
@@ -276,7 +277,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--pap
 
 .sheet{position:fixed;inset:0;background:rgba(20,24,22,.42);display:none;z-index:50;padding:20px;overflow:auto}
 .sheet.on{display:block}
-.sheet-in{max-width:540px;margin:56px auto;background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:22px 24px 24px}
+.sheet-in{max-width:540px;margin:56px auto;background:var(--card);border:1px solid var(--rule);border-radius:var(--r-lg);padding:22px 24px 24px}
 .sheet-in h3{margin:0 0 4px;font-size:16px;font-weight:600}
 .field{margin-top:16px}
 .field label{display:block;font-size:12px;color:var(--ink2);margin-bottom:5px}
@@ -288,7 +289,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--pap
 
 /* ── 루틴 ───────────────────────────────── */
 .rt-toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
-.rt-toolbar button{background:transparent;border:1px solid var(--rule);border-radius:var(--r);padding:5px 11px;font-size:11.5px;font-weight:500;color:var(--ink2);display:inline-flex;align-items:center;gap:6px}
+.rt-toolbar button{background:transparent;border:1px solid var(--rule);border-radius:var(--r-pill);padding:5px 11px;font-size:11.5px;font-weight:500;color:var(--ink2);display:inline-flex;align-items:center;gap:6px}
 .rt-toolbar button:hover{border-color:var(--ink3)}
 .rt-toolbar button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
 .rt-sw{display:inline-block;width:8px;height:8px;border-radius:50%}
@@ -321,7 +322,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--pap
 .close-step .cs{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink2);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .close-step .cgo{margin-top:4px;align-self:flex-start;background:transparent;
-  border:1px solid var(--rule);border-radius:var(--r);padding:3px 8px;font-size:11px;color:var(--ink2)}
+  border:1px solid var(--rule);border-radius:var(--r-pill);padding:3px 8px;font-size:11px;color:var(--ink2)}
 .close-step .cgo:hover{border-color:var(--ink3);color:var(--ink)}
 .close-step.ok .cgo{border-color:transparent;color:var(--ink3)}
 .close-note{margin-top:11px;font-size:11.5px;color:var(--ink3)}
